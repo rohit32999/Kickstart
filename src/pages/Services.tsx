@@ -1,0 +1,145 @@
+import React from 'react';
+import { Brain, FileCheck, BookOpen, MessageSquare, Award, Users } from 'lucide-react';
+import { useAuth } from "../context/AuthContext"; 
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+
+export function Services() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    if (!user) {
+      navigate("/login");
+    } else {
+      navigate("/dashboard");
+    }
+  };
+
+  const services = [
+    {
+      icon: Brain,
+      title: "AI Career Guidance",
+      description: "Get personalized career recommendations based on your skills, interests, and academic performance using advanced AI algorithms.",
+      features: [
+        "Personalized career path recommendations",
+        "Skill gap analysis",
+        "Industry trend insights",
+        "Career progression planning"
+      ]
+    },
+    {
+      icon: FileCheck,
+      title: "Secure Document Management",
+      description: "Store and verify your academic credentials securely using blockchain technology.",
+      features: [
+        "Blockchain verification",
+        "Secure document storage",
+        "Easy sharing options",
+        "Tamper-proof records"
+      ]
+    },
+    {
+      icon: BookOpen,
+      title: "Learning Resources",
+      description: "Access curated learning materials and courses tailored to your career goals.",
+      features: [
+        "Curated course recommendations",
+        "Skill development resources",
+        "Industry-specific training",
+        "Progress tracking"
+      ]
+    },
+    {
+      icon: MessageSquare,
+      title: "AI Chat Support",
+      description: "Get instant answers to your career-related questions from our AI-powered chatbot.",
+      features: [
+        "24/7 availability",
+        "Instant responses",
+        "Personalized guidance",
+        "Multi-language support"
+      ]
+    },
+    {
+      icon: Award,
+      title: "Certification Programs",
+      description: "Earn certificates in various domains to enhance your professional profile.",
+      features: [
+        "Industry-recognized certificates",
+        "Skill assessments",
+        "Digital badges",
+        "Portfolio building"
+      ]
+    },
+    {
+      icon: Users,
+      title: "Mentorship Connection",
+      description: "Connect with industry professionals for guidance and mentorship.",
+      features: [
+        "Expert mentorship",
+        "Industry connections",
+        "Networking opportunities",
+        "Career advice"
+      ]
+    }
+  ];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100 py-16">
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1, ease: "easeOut" }}
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center"
+      >
+        <h1 className="text-5xl font-extrabold text-gray-900 sm:text-6xl">Our <span className="text-indigo-600">Services</span></h1>
+        <p className="mt-5 text-lg text-gray-600 sm:text-xl max-w-3xl mx-auto">
+          Comprehensive career development solutions powered by AI and blockchain technology.
+        </p>
+      </motion.div>
+
+      <div className="mt-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+        >
+          {services.map((service, index) => (
+            <motion.button
+              key={index}
+              onClick={handleButtonClick}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.97 }}
+              className="relative group bg-white/90 rounded-xl shadow-lg overflow-hidden p-6 text-left w-full border border-gray-200 backdrop-blur-lg hover:border-indigo-500 transition-all duration-300 ease-in-out transform hover:scale-[1.05] hover:shadow-2xl"
+            >
+              <div className="flex items-center mb-4">
+                <motion.div whileHover={{ rotate: 10, scale: 1.2 }}>
+                  <service.icon className="h-12 w-12 text-indigo-600 transition-all duration-300 group-hover:text-indigo-800" />
+                </motion.div>
+                <h3 className="ml-3 text-xl font-bold text-gray-900 transition-all duration-300 group-hover:text-indigo-800">
+                  {service.title}
+                </h3>
+              </div>
+
+              <p className="text-gray-600 mb-4">{service.description}</p>
+
+              <ul className="mt-2 space-y-2">
+                {service.features.map((feature, index) => (
+                  <li key={index} className="flex items-center text-gray-600">
+                    <svg className="h-5 w-5 text-indigo-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+            </motion.button>
+          ))}
+        </motion.div>
+      </div>
+    </div>
+  );
+}
