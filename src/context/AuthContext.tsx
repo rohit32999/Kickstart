@@ -1,73 +1,123 @@
 import { createContext, useState, useEffect, ReactNode, useContext } from "react";
 import axios from "axios";
 
+// Define the User interface
 interface User {
   id: string;
   name: string;
   email: string;
-  profilePic?: string; // Profile picture field
+  profilePic?: string;
+  college?: string;
+  branch?: string;
+  year?: string;
+  enrollment?: string;
+  bio?: string;
+  skills?: string;
+  github?: string;
+  linkedin?: string;
+  portfolio?: string;
+  phone?: string;
+  projects?: string;
+  internships?: string;
+  certifications?: string;
+  achievements?: string;
+  interests?: string;
+  hobbies?: string;
 }
 
+// Define the AuthContext type (no setUser here)
 export interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
-  updateProfile: (updatedData: Partial<User>, profilePic?: File) => Promise<void>;
+  updateProfile: (
+    updatedData: Partial<User>,
+    profilePic?: File,
+    resume?: File
+  ) => Promise<{ success: boolean; error?: string }>;
 }
 
+// Create the AuthContext
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const res = await axios.get("http://localhost:5000/api/auth/me", { withCredentials: true });
-        setUser(res.data);
-      } catch {
-        setUser(null);
+  // Fetch the authenticated user's data
+  const fetchUser = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/api/auth/me", {
+        withCredentials: true,
+      });
+      setUser(res.data);
+    } catch {
+      setUser(null);
+      if (window.location.pathname !== "/login") {
+        window.location.href = "/login";
       }
-    };
+    }
+  };
 
+  // Fetch user data on initial render
+  useEffect(() => {
     fetchUser();
   }, []);
 
+  // Login function
   const login = async (email: string, password: string) => {
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", { email, password }, { withCredentials: true });
+      const res = await axios.post(
+        "http://localhost:5000/api/auth/login",
+        { email, password },
+        { withCredentials: true }
+      );
       setUser(res.data);
-      window.location.href = "/"; // Redirect to home after login
+      window.location.href = "/";
     } catch (error) {
       console.error("Login failed", error);
     }
   };
 
+  // Logout function
   const logout = async () => {
     try {
       await axios.post("http://localhost:5000/api/auth/logout", {}, { withCredentials: true });
       setUser(null);
-      window.location.href = "/login"; // Redirect to login page
+      window.location.href = "/login";
     } catch (error) {
       console.error("Logout failed", error);
     }
   };
 
-  const updateProfile = async (updatedData: Partial<User>, profilePic?: File) => {
+  // Update Profile function
+  const updateProfile = async (
+    updatedData: Partial<User>,
+    profilePic?: File,
+    resume?: File
+  ) => {
     try {
       const formData = new FormData();
-      if (updatedData.name) formData.append("name", updatedData.name);
-      if (updatedData.email) formData.append("email", updatedData.email);
+      Object.entries(updatedData).forEach(([key, value]) => {
+        if (value) formData.append(key, value);
+      });
       if (profilePic) formData.append("profilePic", profilePic);
+      if (resume) formData.append("resume", resume);
 
-      const res = await axios.put("http://localhost:5000/api/user/update", formData, {
+      await axios.put("http://localhost:5000/api/user/update", formData, {
         withCredentials: true,
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      setUser(res.data); // Update user state with new profile info
+      // Re-fetch updated user data
+      await fetchUser();
+
+      return { success: true };
     } catch (error) {
       console.error("Profile update failed", error);
+      return {
+        success: false,
+        error: (axios.isAxiosError(error) && error.response?.data) || "Something went wrong",
+      };
     }
   };
 
@@ -78,6 +128,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
+// Custom hook to use the Auth context
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {

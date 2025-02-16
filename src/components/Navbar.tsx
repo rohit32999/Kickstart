@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Menu, ChevronDown, User, LogOut } from "lucide-react";
+import { Menu, User, LogOut } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext"; // Import AuthContext
 
@@ -8,12 +8,19 @@ export function Navbar() {
   const location = useLocation();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [profilePicUrl, setProfilePicUrl] = useState<string>("/default-avatar.png");
 
-  const isActive = (path: string) => {
-    return location.pathname === path
+  // Sync profile picture with the latest user data
+  useEffect(() => {
+    if (user?.profilePic) {
+      setProfilePicUrl(`http://localhost:5000${user.profilePic}?t=${new Date().getTime()}`);
+    }
+  }, [user?.profilePic]);
+
+  const isActive = (path: string) =>
+    location.pathname === path
       ? "text-indigo-600 font-semibold"
       : "text-gray-600 hover:text-indigo-600";
-  };
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -26,7 +33,7 @@ export function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Close dropdown when navigating to another page
+  // Close dropdown on page navigation
   useEffect(() => {
     setDropdownOpen(false);
   }, [location.pathname]);
@@ -35,10 +42,15 @@ export function Navbar() {
     <nav className="bg-white shadow-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
+          {/* Logo Section */}
           <div className="flex items-center space-x-3">
             <Menu className="h-6 w-6 text-indigo-600 cursor-pointer md:hidden" />
-            <Link to="/" className="text-2xl font-bold text-indigo-600">Kickstart</Link>
+            <Link to="/" className="text-2xl font-bold text-indigo-600">
+              Kickstart
+            </Link>
           </div>
+
+          {/* Navigation Links */}
           <div className="hidden md:flex items-center space-x-8">
             <Link to="/" className={isActive("/")}>Home</Link>
             <Link to="/about" className={isActive("/about")}>About</Link>
@@ -50,17 +62,16 @@ export function Navbar() {
           <div className="relative" ref={dropdownRef}>
             {user ? (
               <>
-                {/* Profile Picture Button */}
+                {/* Profile Picture (Expanded Click Area) */}
                 <button
-                  className="flex items-center space-x-2 border p-2 rounded-full focus:outline-none"
+                  className="flex items-center space-x-2 focus:outline-none"
                   onClick={() => setDropdownOpen((prev) => !prev)}
                 >
                   <img
-                    src={user.profilePic || "/default-avatar.png"} // Default image fallback
+                    src={profilePicUrl}
                     alt="Profile"
-                    className="w-10 h-10 rounded-full"
+                    className="w-10 h-10 rounded-full object-cover border border-gray-300 shadow-sm"
                   />
-                  <ChevronDown className="h-5 w-5 text-gray-600" />
                 </button>
 
                 {/* Profile Dropdown */}
