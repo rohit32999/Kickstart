@@ -11,6 +11,7 @@ router.put(
     { name: "resume", maxCount: 1 },
   ]),
   async (req, res) => {
+    console.log(req.body);
     try {
       const { email, ...otherFields } = req.body;
 
@@ -29,7 +30,7 @@ router.put(
 
       const updatedUser = await User.findOneAndUpdate(
         { email },
-        { $set: otherFields },
+        { $set: updateData },
         { new: true, runValidators: true }
       ).select("-password");
 

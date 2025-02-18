@@ -8,6 +8,7 @@ const router = express.Router();
 // Register
 router.post("/register", async (req, res) => {
   try {
+    console.log(req.body);
     const { username, email, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -24,15 +25,20 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
+    const user = await (User.findOne({ email }));
+    //const hashedPassword = user.password;
+    //console.log(user, password, hashedPassword);
+    //console.log(bcrypt.compare(password, hashedPassword).then((res) => console.log(res)).catch((err) => console.log(err)));
+    //console.log("achievements");
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
+      console.log("Invalid credentials");
       return res.status(400).json({ error: "Invalid credentials" });
     }
-
+  
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
     res.cookie("token", token, { httpOnly: true });
-
+    console.log("Login successful");
     res.json({ message: "Login successful", userId: user._id });
   } catch (err) {
     res.status(500).json({ error: err.message });
