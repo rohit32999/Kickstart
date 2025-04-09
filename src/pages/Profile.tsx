@@ -102,14 +102,16 @@ export function Profile() {
   };
 
   const validateFileType = () => {
-    const allowedFormats = ["application/pdf"];
-    if (resume && !allowedFormats.includes(resume.type)) {
+    const allowedImageFormats = ["image/jpeg", "image/jpg", "image/png"];
+    const allowedResumeFormats = ["application/pdf"];
+
+    if (resume && !allowedResumeFormats.includes(resume.type)) {
       setMessage("Resume must be in PDF format.");
       setPopupType("error");
       setShowPopup(true);
       return false;
     }
-    if (profilePic && !allowedFormats.includes(profilePic.type)) {
+    if (profilePic && !allowedImageFormats.includes(profilePic.type)) {
       setMessage("Profile picture must be in JPG, JPEG, or PNG format.");
       setPopupType("error");
       setShowPopup(true);

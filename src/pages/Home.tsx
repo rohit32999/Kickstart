@@ -13,7 +13,7 @@ export function Home() {
     if (!user) {
       navigate("/login");
     } else {
-      navigate("/dashboard");
+      navigate("/services");
     }
   };
 

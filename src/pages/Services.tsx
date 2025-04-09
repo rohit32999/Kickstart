@@ -8,12 +8,20 @@ export function Services() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement>, title: string) => {
     event.preventDefault();
-    if (!user) {
-      navigate("/login");
-    } else {
-      navigate("/dashboard");
+    if (title === "Learning Resources") {
+      navigate("/resources");
+    } 
+    else if (title === "Certification Programs") {
+      navigate("/certification");
+    }
+    else {
+      if (!user) {
+        navigate("/login");
+      } else {
+        navigate("/dashboard");
+      }
     }
   };
 
@@ -110,7 +118,7 @@ export function Services() {
           {services.map((service, index) => (
             <motion.button
               key={index}
-              onClick={handleButtonClick}
+              onClick={(e) => handleButtonClick(e, service.title)}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.97 }}
               className="relative group bg-white/90 rounded-xl shadow-lg overflow-hidden p-6 text-left w-full border border-gray-200 backdrop-blur-lg hover:border-indigo-500 transition-all duration-300 ease-in-out transform hover:scale-[1.05] hover:shadow-2xl"

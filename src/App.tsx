@@ -11,6 +11,8 @@ import Signup from "./pages/signup";
 import Mission from "./pages/Mission";
 import Vision from "./pages/Vision";
 import { Profile } from "./pages/Profile";
+import { Resources } from "./pages/Resources";
+import { Certification } from "./pages/certification";
 
 const App: React.FC = () => {
   return (
@@ -26,6 +28,8 @@ const App: React.FC = () => {
         <Route path="/vision" element={<Vision />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/resources" element={<Resources />} />
+        <Route path="/certification" element={<Certification />} />
       </Routes>
       <Footer />
     </div>
