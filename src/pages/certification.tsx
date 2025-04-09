@@ -93,9 +93,9 @@ export function Certification() {
       : certifications.filter((cert) => cert.category === selectedCategory);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100 py-16 px-6">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 py-16 px-6 text-gray-900 dark:text-white">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-4xl font-extrabold text-center text-indigo-700 mb-10">
+        <h1 className="text-4xl font-extrabold text-center text-indigo-700 dark:text-yellow-400 mb-10">
           Certification Programs
         </h1>
 
@@ -103,7 +103,9 @@ export function Certification() {
           <button
             onClick={() => setSelectedCategory("All")}
             className={`px-4 py-2 rounded-full border ${
-              selectedCategory === "All" ? "bg-indigo-600 text-white" : "bg-white text-indigo-600 border-indigo-600"
+              selectedCategory === "All"
+                ? "bg-indigo-600 text-white dark:bg-yellow-500 dark:text-black"
+                : "bg-white dark:bg-gray-700 text-indigo-600 dark:text-yellow-300 border-indigo-600 dark:border-yellow-300"
             }`}
           >
             All
@@ -113,7 +115,9 @@ export function Certification() {
               key={cat}
               onClick={() => setSelectedCategory(cat)}
               className={`px-4 py-2 rounded-full border ${
-                selectedCategory === cat ? "bg-indigo-600 text-white" : "bg-white text-indigo-600 border-indigo-600"
+                selectedCategory === cat
+                  ? "bg-indigo-600 text-white dark:bg-yellow-500 dark:text-black"
+                  : "bg-white dark:bg-gray-700 text-indigo-600 dark:text-yellow-300 border-indigo-600 dark:border-yellow-300"
               }`}
             >
               {cat}
@@ -130,13 +134,13 @@ export function Certification() {
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.98 }}
               key={index}
-              className="block bg-white rounded-xl shadow-md p-6 border hover:border-indigo-500 transition-all"
+              className="block bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 border border-gray-200 dark:border-gray-700 hover:border-indigo-500 dark:hover:border-yellow-400 transition-all"
             >
-              <h2 className="text-2xl font-semibold text-indigo-700 mb-2">
+              <h2 className="text-2xl font-semibold text-indigo-700 dark:text-yellow-300 mb-2">
                 {cert.title}
               </h2>
-              <p className="text-gray-600 mb-4">{cert.description}</p>
-              <span className="inline-block text-sm text-indigo-500 font-medium">
+              <p className="text-gray-600 dark:text-gray-300 mb-4">{cert.description}</p>
+              <span className="inline-block text-sm text-indigo-500 dark:text-yellow-400 font-medium">
                 Category: {cert.category}
               </span>
             </motion.a>

@@ -95,15 +95,15 @@ export function Services() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100 py-16">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 text-gray-900 dark:text-white py-16">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, ease: "easeOut" }}
         className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center"
       >
-        <h1 className="text-5xl font-extrabold text-gray-900 sm:text-6xl">Our <span className="text-indigo-600">Services</span></h1>
-        <p className="mt-5 text-lg text-gray-600 sm:text-xl max-w-3xl mx-auto">
+        <h1 className="text-5xl font-extrabold text-gray-900 dark:text-white sm:text-6xl">Our <span className="text-indigo-600 dark:text-yellow-400">Services</span></h1>
+        <p className="mt-5 text-lg text-gray-600 dark:text-gray-300 sm:text-xl max-w-3xl mx-auto">
           Comprehensive career development solutions powered by AI and blockchain technology.
         </p>
       </motion.div>
@@ -121,23 +121,23 @@ export function Services() {
               onClick={(e) => handleButtonClick(e, service.title)}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.97 }}
-              className="relative group bg-white/90 rounded-xl shadow-lg overflow-hidden p-6 text-left w-full border border-gray-200 backdrop-blur-lg hover:border-indigo-500 transition-all duration-300 ease-in-out transform hover:scale-[1.05] hover:shadow-2xl"
+              className="relative group bg-white/90 dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden p-6 text-left w-full border border-gray-200 dark:border-gray-700 backdrop-blur-lg hover:border-indigo-500 dark:hover:border-yellow-500 transition-all duration-300 ease-in-out transform hover:scale-[1.05] hover:shadow-2xl"
             >
               <div className="flex items-center mb-4">
                 <motion.div whileHover={{ rotate: 10, scale: 1.2 }}>
-                  <service.icon className="h-12 w-12 text-indigo-600 transition-all duration-300 group-hover:text-indigo-800" />
+                  <service.icon className="h-12 w-12 text-indigo-600 dark:text-yellow-400 transition-all duration-300 group-hover:text-indigo-800 dark:group-hover:text-yellow-300" />
                 </motion.div>
-                <h3 className="ml-3 text-xl font-bold text-gray-900 transition-all duration-300 group-hover:text-indigo-800">
+                <h3 className="ml-3 text-xl font-bold text-gray-900 dark:text-white transition-all duration-300 group-hover:text-indigo-800 dark:group-hover:text-yellow-300">
                   {service.title}
                 </h3>
               </div>
 
-              <p className="text-gray-600 mb-4">{service.description}</p>
+              <p className="text-gray-600 dark:text-gray-300 mb-4">{service.description}</p>
 
               <ul className="mt-2 space-y-2">
                 {service.features.map((feature, index) => (
-                  <li key={index} className="flex items-center text-gray-600">
-                    <svg className="h-5 w-5 text-indigo-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <li key={index} className="flex items-center text-gray-600 dark:text-gray-300">
+                    <svg className="h-5 w-5 text-indigo-600 dark:text-yellow-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                     </svg>
                     {feature}
