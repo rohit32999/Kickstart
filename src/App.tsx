@@ -13,6 +13,10 @@ import Vision from "./pages/Vision";
 import { Profile } from "./pages/Profile";
 import { Resources } from "./pages/Resources";
 import { Certification } from "./pages/certification";
+import CareerChat from "./pages/CareerChat"; // adjust path if different
+
+<Route path="/career-chat" element={<CareerChat />} />
+
 
 const App: React.FC = () => {
   const defaultTitle = useRef(document.title);
@@ -47,6 +51,7 @@ const App: React.FC = () => {
         <Route path="/profile" element={<Profile />} />
         <Route path="/resources" element={<Resources />} />
         <Route path="/certification" element={<Certification />} />
+        <Route path="/career-chat" element={<CareerChat />} /> 
       </Routes>
       <Footer />
     </div>
