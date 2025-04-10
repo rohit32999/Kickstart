@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { Mail, Phone, MapPin, Clock } from 'lucide-react';
 import { motion } from "framer-motion";
-import emailjs from 'emailjs-com';
+import emailjs, { EmailJSResponseStatus } from 'emailjs-com';
 
 export function Contact() {
   const formRef = useRef<HTMLFormElement>(null);
@@ -14,18 +14,18 @@ export function Contact() {
         .sendForm(
           "service_kbti9wm",    // Replace with your actual service ID
           "template_gx6jcxp",   // Replace with your actual template ID
-          formRef.current,
+          formRef.current as HTMLFormElement, // Explicitly cast to HTMLFormElement
           "2Ms_m_UjFVjk0gCFn"     // Replace with your actual public key
         )
         .then(
-          (result) => {
-            console.log("Email sent:", result.text);
-            alert("✅ Message sent successfully!");
-            formRef.current?.reset();
+          (result: EmailJSResponseStatus) => { // Add type for result
+        console.log("Email sent:", result.text);
+        alert("✅ Message sent successfully!");
+        formRef.current?.reset();
           },
-          (error) => {
-            console.error("Email error:", error.text);
-            alert("❌ Something went wrong. Please try again.");
+          (error: { text: string }) => { // Add type for error
+        console.error("Email error:", error.text);
+        alert("❌ Something went wrong. Please try again.");
           }
         );
     }
