@@ -66,7 +66,9 @@ export function Navbar() {
             <Link to="/" className={isActive("/")}>Home</Link>
             <Link to="/about" className={isActive("/about")}>About</Link>
             <Link to="/services" className={isActive("/services")}>Services</Link>
+            <Link to="/career-chat" className={isActive("/career-chat")}>Career Chat</Link>
             <Link to="/contact" className={isActive("/contact")}>Contact</Link>
+           
           </div>
 
           {/* Right Section */}
@@ -123,7 +125,7 @@ export function Navbar() {
               )}
             </div>
 
-            {/* Hamburger - Right Side with Spin Animation */}
+            {/* Hamburger - Mobile */}
             <motion.button
               className="md:hidden text-indigo-600 dark:text-yellow-300"
               onClick={() => setMobileMenuOpen((prev) => !prev)}
@@ -159,19 +161,18 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* Sliding Mobile Menu from Right BELOW the Navbar */}
+      {/* Mobile Menu */}
       <div
         className={`fixed top-16 right-0 h-[calc(100vh-64px)] w-3/4 max-w-xs bg-white dark:bg-gray-900 z-40 transform transition-transform duration-300 ease-in-out ${
           mobileMenuOpen ? "translate-x-0" : "translate-x-full"
         } md:hidden shadow-lg border-l dark:border-gray-700 py-6 px-6 flex flex-col gap-4`}
       >
-        {/* Close Button already handled by spinning icon */}
         <Link to="/" className={isActive("/")}>Home</Link>
         <Link to="/about" className={isActive("/about")}>About</Link>
         <Link to="/services" className={isActive("/services")}>Services</Link>
         <Link to="/contact" className={isActive("/contact")}>Contact</Link>
+        <Link to="/career-chat" className={isActive("/career-chat")}>Career Chat</Link>
 
-        {/* Dark Mode Toggle in Mobile */}
         <button
           onClick={() => setIsDarkMode(!isDarkMode)}
           className="px-3 py-2 mt-4 rounded-full bg-gray-200 dark:bg-gray-700 text-sm dark:text-white transition-all w-fit"
@@ -179,7 +180,6 @@ export function Navbar() {
           {isDarkMode ? "☀️" : "🌙"}
         </button>
 
-        {/* Login in Mobile */}
         {!user && (
           <Link
             to="/login"
