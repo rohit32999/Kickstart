@@ -18,7 +18,7 @@ export function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 text-gray-900 dark:text-white flex flex-col">
       {/* Hero Section */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
@@ -26,29 +26,29 @@ export function Home() {
         transition={{ duration: 1, ease: "easeOut" }}
         className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center"
       >
-        <h1 className="text-5xl font-extrabold text-gray-900 sm:text-6xl md:text-7xl">
-          <span className="block text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-blue-600">
+        <h1 className="text-5xl font-extrabold text-gray-900 dark:text-white sm:text-6xl md:text-7xl">
+          <span className="block text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-blue-600 dark:from-yellow-300 dark:to-yellow-500">
             Launching Dreams,
           </span>
-          <span className="block text-indigo-700">Shaping Futures</span>
+          <span className="block text-indigo-700 dark:text-yellow-400">Shaping Futures</span>
         </h1>
-        <p className="mt-5 max-w-2xl mx-auto text-lg text-gray-600 sm:text-xl">
+        <p className="mt-5 max-w-2xl mx-auto text-lg text-gray-600 dark:text-gray-300 sm:text-xl">
           Navigate your career journey with AI-powered guidance and secure credential management.
         </p>
         <div className="mt-10 flex justify-center">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={handleButtonClick}
-              className="px-10 py-5 font-medium text-xl rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 shadow-lg transition-all duration-300"
-            >
-              Start Your Journey
-            </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleButtonClick}
+            className="px-10 py-5 font-medium text-xl rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 dark:bg-yellow-500 dark:hover:bg-yellow-600 shadow-lg transition-all duration-300"
+          >
+            Start Your Journey
+          </motion.button>
         </div>
       </motion.div>
 
       {/* Features Section */}
-      <div className="py-16 bg-transparent">
+      <div className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -83,24 +83,24 @@ export function Home() {
                 whileTap={{ scale: 0.97 }}
                 onClick={handleButtonClick}
                 key={index}
-                className="relative group flex flex-col p-6 bg-white/90 rounded-xl shadow-lg border border-gray-200 backdrop-blur-lg hover:border-indigo-500 transition-all duration-300 ease-in-out transform hover:scale-[1.05] hover:shadow-2xl"
+                className="relative group flex flex-col p-6 bg-white/90 dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 backdrop-blur-lg hover:border-indigo-500 dark:hover:border-yellow-500 transition-all duration-300 ease-in-out transform hover:scale-[1.05] hover:shadow-2xl"
               >
                 {/* Animated Icon */}
                 <motion.div
                   whileHover={{ rotate: 10, scale: 1.2 }}
                   transition={{ duration: 0.3 }}
-                  className="p-3 rounded-full bg-indigo-50 group-hover:bg-indigo-100"
+                  className="p-3 rounded-full bg-indigo-50 dark:bg-gray-700 group-hover:bg-indigo-100 dark:group-hover:bg-gray-600"
                 >
-                  <feature.icon className="h-12 w-12 text-indigo-600 transition-all duration-300 group-hover:text-indigo-800" />
+                  <feature.icon className="h-12 w-12 text-indigo-600 dark:text-yellow-400 transition-all duration-300 group-hover:text-indigo-800 dark:group-hover:text-yellow-300" />
                 </motion.div>
 
-                <h3 className="mt-4 text-xl font-bold text-gray-900 transition-all duration-300 group-hover:text-indigo-800">
+                <h3 className="mt-4 text-xl font-bold text-gray-900 dark:text-white transition-all duration-300 group-hover:text-indigo-800 dark:group-hover:text-yellow-300">
                   {feature.title}
                 </h3>
-                <p className="mt-2 text-gray-600 text-center">{feature.description}</p>
+                <p className="mt-2 text-gray-600 dark:text-gray-300 text-center">{feature.description}</p>
 
                 {/* Gradient Effect on Hover */}
-                <div className="absolute inset-0 bg-gradient-to-r from-indigo-100 to-white opacity-0 group-hover:opacity-50 transition-all duration-300"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-indigo-100 to-white dark:from-yellow-800 dark:to-yellow-900 opacity-0 group-hover:opacity-50 transition-all duration-300"></div>
               </motion.button>
             ))}
           </motion.div>
