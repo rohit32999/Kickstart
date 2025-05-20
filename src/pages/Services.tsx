@@ -5,7 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
 export function Services() {
-  const { user } = useAuth();
+  // const { user } = useAuth();
+  useAuth();
   const navigate = useNavigate();
 
   const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement>, title: string) => {
@@ -20,11 +21,7 @@ export function Services() {
       navigate("/AICareerGuidance");
     }
     else {
-      if (!user) {
-        navigate("/login");
-      } else {
-        navigate("/dashboard");
-      }
+      navigate("/dashboard");
     }
   };
 
@@ -98,20 +95,20 @@ export function Services() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 text-gray-900 dark:text-white py-16">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 text-gray-900 dark:text-white py-8">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, ease: "easeOut" }}
         className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center"
       >
-        <h1 className="text-5xl font-extrabold text-gray-900 dark:text-white sm:text-6xl">Our <span className="text-indigo-600 dark:text-yellow-400">Services</span></h1>
-        <p className="mt-5 text-lg text-gray-600 dark:text-gray-300 sm:text-xl max-w-3xl mx-auto">
+        <h1 className="text-5xl font-extrabold text-gray-900 dark:text-white sm:text-6xl mb-2">Our <span className="text-indigo-600 dark:text-yellow-400">Services</span></h1>
+        <p className="mt-2 text-lg text-gray-600 dark:text-gray-300 sm:text-xl max-w-3xl mx-auto">
           Comprehensive career development solutions powered by AI and blockchain technology.
         </p>
       </motion.div>
 
-      <div className="mt-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="mt-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
@@ -139,12 +136,26 @@ export function Services() {
 
               <ul className="mt-2 space-y-2">
                 {service.features.map((feature, index) => (
-                  <li key={index} className="flex items-center text-gray-600 dark:text-gray-300">
-                    <svg className="h-5 w-5 text-indigo-600 dark:text-yellow-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                    </svg>
-                    {feature}
-                  </li>
+                  typeof feature === "string" ? (
+                    <li key={index} className="flex items-center text-gray-600 dark:text-gray-300">
+                      <svg className="h-5 w-5 text-indigo-600 dark:text-yellow-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                      </svg>
+                      {feature}
+                    </li>
+                  ) : (
+                    <li key={index} className="flex items-center text-gray-600 dark:text-gray-300">
+                      <svg className="h-5 w-5 text-indigo-600 dark:text-yellow-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                      </svg>
+                      <button
+                        onClick={e => { e.stopPropagation(); navigate('/services/iq-test'); }}
+                        className="ml-1 underline text-indigo-600 dark:text-yellow-400 hover:text-indigo-800 dark:hover:text-yellow-300 transition-all"
+                      >
+                        {feature}
+                      </button>
+                    </li>
+                  )
                 ))}
               </ul>
             </motion.button>

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { Routes, Route } from "react-router-dom";
+import IQTest from "./pages/IQTest";
 import { Navbar } from "./components/Navbar";
 import { Footer } from "./components/Footer";
 import { Home } from "./pages/Home";
@@ -14,6 +15,7 @@ import { Profile } from "./pages/Profile";
 import { Resources } from "./pages/Resources";
 import { Certification } from "./pages/certification";
 import CareerChat from "./pages/CareerChat"; // adjust path if different
+import AICareerGuidance from "./pages/AICareerGuidance";
 
 <Route path="/career-chat" element={<CareerChat />} />
 
@@ -43,15 +45,18 @@ const App: React.FC = () => {
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
         <Route path="/services" element={<Services />} />
+        <Route path="/services/iq-test" element={<IQTest />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
         <Route path="/mission" element={<Mission />} />
         <Route path="/vision" element={<Vision />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/IQTest" element={<IQTest />} />
         <Route path="/resources" element={<Resources />} />
         <Route path="/certification" element={<Certification />} />
         <Route path="/career-chat" element={<CareerChat />} /> 
+      <Route path="/AICareerGuidance" element={<AICareerGuidance />} />
       </Routes>
       <Footer />
     </div>

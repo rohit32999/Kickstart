@@ -24,23 +24,24 @@ export function Home() {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, ease: "easeOut" }}
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center"
+        className="w-full px-4 sm:px-8 lg:px-0 pt-12 pb-24 text-center flex flex-col items-center justify-center bg-transparent shadow-none border-none rounded-none"
+        style={{ minHeight: 'unset', maxWidth: 'unset' }}
       >
-        <h1 className="text-5xl font-extrabold text-gray-900 dark:text-white sm:text-6xl md:text-7xl">
-          <span className="block text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-blue-600 dark:from-yellow-300 dark:to-yellow-500">
+        <h1 className="text-5xl sm:text-6xl md:text-7xl font-extrabold text-gray-900 dark:text-white drop-shadow-xl mb-2 w-full leading-[1.1] md:leading-[1.4]" style={{ paddingBottom: '0.25em' }}>
+          <span className="block text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-blue-500 to-blue-700 dark:from-yellow-300 dark:via-yellow-500 dark:to-yellow-700 animate-gradient-x">
             Launching Dreams,
           </span>
-          <span className="block text-indigo-700 dark:text-yellow-400">Shaping Futures</span>
+          <span className="block text-indigo-700 dark:text-yellow-400 animate-fade-in">Shaping Futures</span>
         </h1>
-        <p className="mt-5 max-w-2xl mx-auto text-lg text-gray-600 dark:text-gray-300 sm:text-xl">
-          Navigate your career journey with AI-powered guidance and secure credential management.
+        <p className="mt-2 max-w-2xl mx-auto text-lg sm:text-xl text-gray-700 dark:text-gray-200 font-medium animate-fade-in">
+          Navigate your career journey with <span className="font-bold text-indigo-600 dark:text-yellow-400">AI-powered guidance</span> and <span className="font-bold text-indigo-600 dark:text-yellow-400">secure credential management</span>.
         </p>
-        <div className="mt-10 flex justify-center">
+        <div className="mt-6 flex justify-center">
           <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.12 }}
+            whileTap={{ scale: 0.97 }}
             onClick={handleButtonClick}
-            className="px-10 py-5 font-medium text-xl rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 dark:bg-yellow-500 dark:hover:bg-yellow-600 shadow-lg transition-all duration-300"
+            className="px-12 py-5 font-semibold text-2xl rounded-full text-white bg-gradient-to-r from-indigo-600 via-blue-500 to-blue-700 hover:from-indigo-700 hover:to-blue-800 dark:from-yellow-500 dark:via-yellow-400 dark:to-yellow-600 dark:hover:from-yellow-600 dark:hover:to-yellow-700 shadow-2xl transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-indigo-300 dark:focus:ring-yellow-200 animate-bounce-slow"
           >
             Start Your Journey
           </motion.button>
@@ -78,30 +79,23 @@ export function Home() {
                 description: "24/7 intelligent career guidance assistance.",
               },
             ].map((feature, index) => (
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.97 }}
+              <button
                 onClick={handleButtonClick}
                 key={index}
-                className="relative group flex flex-col p-6 bg-white/90 dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 backdrop-blur-lg hover:border-indigo-500 dark:hover:border-yellow-500 transition-all duration-300 ease-in-out transform hover:scale-[1.05] hover:shadow-2xl"
+                className="relative flex flex-col p-6 bg-white/90 dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 backdrop-blur-lg transition-all duration-300 ease-in-out group hover:scale-105 hover:shadow-2xl hover:bg-indigo-50 dark:hover:bg-yellow-100 hover:border-indigo-500 dark:hover:border-yellow-500"
               >
-                {/* Animated Icon */}
-                <motion.div
-                  whileHover={{ rotate: 10, scale: 1.2 }}
-                  transition={{ duration: 0.3 }}
-                  className="p-3 rounded-full bg-indigo-50 dark:bg-gray-700 group-hover:bg-indigo-100 dark:group-hover:bg-gray-600"
-                >
-                  <feature.icon className="h-12 w-12 text-indigo-600 dark:text-yellow-400 transition-all duration-300 group-hover:text-indigo-800 dark:group-hover:text-yellow-300" />
-                </motion.div>
+                {/* Icon */}
+                <div className="mx-auto flex items-center justify-center w-16 h-16 rounded-full bg-indigo-100 dark:bg-yellow-400 shadow-lg transition-all duration-300 group-hover:bg-indigo-500 group-hover:scale-110 group-hover:shadow-indigo-400/60 dark:group-hover:bg-yellow-300">
+                  <feature.icon className="h-10 w-10 text-indigo-600 dark:text-yellow-700 transition-all duration-300 group-hover:text-white dark:group-hover:text-yellow-800" />
+                </div>
 
-                <h3 className="mt-4 text-xl font-bold text-gray-900 dark:text-white transition-all duration-300 group-hover:text-indigo-800 dark:group-hover:text-yellow-300">
+                <h3 className="mt-4 text-xl font-bold text-gray-900 dark:text-white transition-all duration-300 group-hover:text-indigo-700 dark:group-hover:text-yellow-700">
                   {feature.title}
                 </h3>
-                <p className="mt-2 text-gray-600 dark:text-gray-300 text-center">{feature.description}</p>
-
-                {/* Gradient Effect on Hover */}
-                <div className="absolute inset-0 bg-gradient-to-r from-indigo-100 to-white dark:from-yellow-800 dark:to-yellow-900 opacity-0 group-hover:opacity-50 transition-all duration-300"></div>
-              </motion.button>
+                <p className="mt-2 text-gray-600 dark:text-gray-300 text-center transition-all duration-300 group-hover:text-indigo-600 dark:group-hover:text-yellow-800">
+                  {feature.description}
+                </p>
+              </button>
             ))}
           </motion.div>
         </div>

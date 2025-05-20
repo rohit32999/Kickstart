@@ -151,12 +151,19 @@ export function Profile() {
 
         {/* Profile Picture */}
         <div className="flex flex-col items-center mb-8">
-          <div className="relative w-40 h-40 rounded-full overflow-hidden border-4 border-indigo-300 shadow-lg">
-            <img
-              src={user?.profilePic ? `http://localhost:5000${user.profilePic}` : "/default-avatar.png"}
-              alt="Profile"
-              className="w-full h-full object-cover"
-            />
+          <div className="relative w-40 h-40 rounded-full overflow-hidden border-4 border-indigo-300 shadow-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+            {user?.profilePic ? (
+              <img
+                src={`http://localhost:5000${user.profilePic}`}
+                alt="Profile"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-24 h-24 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="8" r="4" />
+                <path d="M16 20v-2a4 4 0 0 0-8 0v2" />
+              </svg>
+            )}
           </div>
           <label className="block mt-4 font-medium">Update Profile Picture:</label>
           <label htmlFor="profilePic" className="cursor-pointer bg-indigo-600 dark:bg-yellow-500 text-white p-3 rounded mt-2 inline-flex items-center justify-center">
@@ -194,6 +201,8 @@ export function Profile() {
             Update Profile
           </button>
         </form>
+        <div className="mt-10 flex flex-col items-center">
+        </div>
       </motion.div>
     </div>
   );
