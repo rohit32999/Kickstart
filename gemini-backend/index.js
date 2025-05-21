@@ -7,7 +7,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const GEMINI_API_KEY = "AIzaSyBgUDIelHjsRvAaAU2s8I42IDhXlCD66_E";
 
 app.post("/api/chat", async (req, res) => {
   const { message } = req.body;
@@ -22,17 +22,10 @@ app.post("/api/chat", async (req, res) => {
       {
         contents: [
           {
-            role: "system",
-            parts: [
-              {
-                text:
-                  "You are a helpful and concise career guidance assistant. Please answer every question in under 3 sentences. Avoid long explanations unless the user specifically asks for details.",
-              },
-            ],
-          },
-          {
             role: "user",
-            parts: [{ text: message }],
+            parts: [{
+              text: `You are a helpful and concise career guidance assistant. Please answer every question in under 3 sentences. Avoid long explanations unless the user specifically asks for details.\n\n${message}`
+            }],
           },
         ],
         generationConfig: {
@@ -43,7 +36,23 @@ app.post("/api/chat", async (req, res) => {
         },
         safetySettings: [
           {
-            category: "HARM_CATEGORY_DANGEROUS",
+            category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+            threshold: 3,
+          },
+          {
+            category: "HARM_CATEGORY_HATE_SPEECH",
+            threshold: 3,
+          },
+          {
+            category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+            threshold: 3,
+          },
+          {
+            category: "HARM_CATEGORY_HARASSMENT",
+            threshold: 3,
+          },
+          {
+            category: "HARM_CATEGORY_CIVIC_INTEGRITY",
             threshold: 3,
           },
         ],
@@ -63,6 +72,6 @@ app.post("/api/chat", async (req, res) => {
   }
 });
 
-app.listen(5000, () => {
-  console.log("✅ Gemini proxy server is running on http://localhost:5000");
+app.listen(5001, () => {
+  console.log("✅ Gemini proxy server is running on http://localhost:5001");
 });

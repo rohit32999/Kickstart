@@ -90,11 +90,20 @@ export function Navbar() {
                     className="flex items-center space-x-2 focus:outline-none"
                     onClick={() => setDropdownOpen((prev) => !prev)}
                   >
-                    <img
-                      src={profilePicUrl}
-                      alt="Profile"
-                      className="w-10 h-10 rounded-full object-cover border border-gray-300 shadow-sm"
-                    />
+                    {user?.profilePic ? (
+                      <img
+                        src={profilePicUrl}
+                        alt="Profile"
+                        className="w-10 h-10 rounded-full object-cover border border-gray-300 shadow-sm"
+                      />
+                    ) : (
+                      <span className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center border border-gray-300 shadow-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <circle cx="12" cy="8" r="4" />
+                          <path d="M16 20v-2a4 4 0 0 0-8 0v2" />
+                        </svg>
+                      </span>
+                    )}
                   </button>
 
                   {dropdownOpen && (

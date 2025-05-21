@@ -23,6 +23,8 @@ const UserSchema = new mongoose.Schema({
   achievements: String,
   interests: String,
   hobbies: String,
+  emotionalIntelligenceScore: { type: Number, default: null },
+  intelligenceQuotientScore: { type: Number, default: null },
 });
 
 module.exports = mongoose.model("User", UserSchema);

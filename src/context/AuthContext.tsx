@@ -42,37 +42,38 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
   // Fetch the authenticated user's data
   const fetchUser = async () => {
+    setLoading(true);
     try {
       const res = await axios.get("http://localhost:5000/api/auth/me", {
         withCredentials: true,
       });
-      console.log(res.data);
       setUser(res.data);
     } catch {
       setUser(null);
-      if (window.location.pathname !== "/login") {
-        window.location.href = "/login";
-      }
+    } finally {
+      setLoading(false);
     }
   };
 
   // Fetch user data on initial render
   useEffect(() => {
     fetchUser();
+    // eslint-disable-next-line
   }, []);
 
   // Login function
   const login = async (email: string, password: string) => {
     try {
-      const res = await axios.post(
+      await axios.post(
         "http://localhost:5000/api/auth/login",
         { email, password },
         { withCredentials: true }
       );
-      setUser(res.data);
+      await fetchUser();
       window.location.href = "/";
     } catch (error) {
       console.error("Login failed", error);
@@ -122,9 +123,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  // Only redirect to login if not loading and user is null, and not already on login page
+  useEffect(() => {
+    if (!loading && user === null && window.location.pathname !== "/login") {
+      window.location.href = "/login";
+    }
+  }, [loading, user]);
+
   return (
     <AuthContext.Provider value={{ user, login, logout, updateProfile }}>
-      {children}
+      {!loading && children}
     </AuthContext.Provider>
   );
 };
