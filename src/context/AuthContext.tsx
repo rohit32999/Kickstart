@@ -1,5 +1,6 @@
 import { createContext, useState, useEffect, ReactNode, useContext } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 // Define the User interface
 interface User {
@@ -25,7 +26,7 @@ interface User {
   hobbies?: string;
 }
 
-// Define the AuthContext type (no setUser here)
+// Define the AuthContext type (add loading here)
 export interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
@@ -35,6 +36,7 @@ export interface AuthContextType {
     profilePic?: File,
     resume?: File
   ) => Promise<{ success: boolean; error?: string }>;
+  loading: boolean; // <-- Add this line
 }
 
 // Create the AuthContext
@@ -43,6 +45,7 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   // Fetch the authenticated user's data
   const fetchUser = async () => {
@@ -74,7 +77,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         { withCredentials: true }
       );
       await fetchUser();
-      window.location.href = "/";
+      // Use client-side navigation instead of window.location.href
+      // window.location.href = "/";
+      navigate("/");
     } catch (error) {
       console.error("Login failed", error);
     }
@@ -85,7 +90,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       await axios.post("http://localhost:5000/api/auth/logout", {}, { withCredentials: true });
       setUser(null);
-      window.location.href = "/login";
+      // Use client-side navigation instead of window.location.href
+      // window.location.href = "/login";
+      navigate("/login");
     } catch (error) {
       console.error("Logout failed", error);
     }
@@ -131,8 +138,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [loading, user]);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, updateProfile }}>
-      {!loading && children}
+    <AuthContext.Provider value={{ user, login, logout, updateProfile, loading }}>
+      {loading ? (
+        <div className="min-h-screen flex items-center justify-center transition-colors duration-500 bg-white dark:bg-gray-900">
+          <div className="flex flex-col items-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-600 dark:border-yellow-400 transition-colors duration-500"></div>
+            <span className="mt-6 text-lg font-semibold text-indigo-700 dark:text-yellow-400 transition-colors duration-500">Loading...</span>
+          </div>
+        </div>
+      ) : (
+        <div className="transition-opacity duration-700 opacity-100">{children}</div>
+      )}
     </AuthContext.Provider>
   );
 };

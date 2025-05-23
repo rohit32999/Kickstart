@@ -7,7 +7,7 @@ import { CareerRecommendationList } from "../components/CareerRecommendationList
 import { PersonalityProfileForm } from "../components/PersonalityProfileForm";
 
 export default function IQTest() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [questions, setQuestions] = useState<any[]>([]);
   const [answers, setAnswers] = useState<any[]>([]);
@@ -243,13 +243,16 @@ export default function IQTest() {
   };
   const aboutYourself = getAboutYourself();
 
+  // Prevent rendering while auth is loading to avoid double loading screens
+  if (authLoading) return null; // Prevent double loading screen
+
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 py-10"
       style={{ userSelect: 'none' }}
       onContextMenu={e => e.preventDefault()}
     >
-      <div className="max-w-2xl w-full bg-white/90 dark:bg-gray-900 p-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+      <div className="max-w-3xl w-full bg-white/90 dark:bg-gray-900 p-8 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700">
         <h2 className="text-3xl font-bold text-indigo-700 dark:text-yellow-400 mb-6 text-center">IQ Test</h2>
         {error && <div className="mb-4 text-red-600 font-semibold">{error}</div>}
         {fetching ? (
@@ -285,6 +288,8 @@ export default function IQTest() {
                   e.preventDefault();
                   setLoading(true);
                   setError("");
+                  setCareerRecs([]);
+                  localStorage.removeItem('aboutYourself');
                   const form = e.target as HTMLFormElement;
                   const data = {
                     hobbies: form.hobbies.value,
@@ -296,7 +301,7 @@ export default function IQTest() {
                     location: form.location ? form.location.value : undefined,
                     personality: personalityProfile
                   };
-                  // Save to localStorage
+                  // Save to localStorage (for edit convenience, not for recommendation logic)
                   localStorage.setItem('aboutYourself', JSON.stringify({
                     hobbies: data.hobbies,
                     interests: data.interests,
@@ -306,7 +311,7 @@ export default function IQTest() {
                   }));
                   try {
                     await axios.put("http://localhost:5000/api/user/update", data);
-                    // Fetch personalized career recommendations
+                    // Always fetch fresh recommendations
                     const recRes = await import("./careerRecommendation");
                     const { getCareerRecommendations } = recRes;
                     const recommendations = await getCareerRecommendations({
@@ -319,6 +324,7 @@ export default function IQTest() {
                       personality: personalityProfile
                     });
                     setCareerRecs(recommendations as any[]);
+                    setSubmitted(true); // Set submitted to true after recommendations are set
                     alert("Thank you! Your details have been saved. See your personalized career pathway below.");
                   } catch (err) {
                     setError("Failed to save details or fetch recommendations. Please try again.");
@@ -395,20 +401,21 @@ export default function IQTest() {
             )}
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 gap-6">
+          <form onSubmit={handleSubmit} className="space-y-8">
+            <div className="grid grid-cols-1 gap-8">
               {questions.map((q, qIdx) => (
-                <div key={qIdx} className="p-4 bg-white rounded-lg shadow-md border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-                  <div className="text-gray-800 dark:text-gray-200 mb-2">
+                <div key={qIdx} className="p-6 bg-white rounded-xl shadow-lg border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+                  <div className="text-gray-800 dark:text-gray-200 mb-4">
                     <span className="font-semibold">Question {qIdx + 1}:</span> {q.question}
                   </div>
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-3 w-full">
                         {q.options.map((opt: string, optIdx: number) => (
                         <button
                           key={optIdx}
+                          type="button" // Prevent form submission on option click
                           onClick={() => handleOptionChange(qIdx, optIdx)}
-                          className={`flex-1 px-4 py-2 rounded-lg font-semibold transition-all flex items-center justify-center
+                          className={`w-full sm:w-auto px-4 py-2 rounded-lg font-semibold transition-all flex items-center justify-center
                           ${answers[qIdx] === optIdx ? 'bg-indigo-600 text-white shadow-md' : 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200'}
                           ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                           disabled={loading}
@@ -421,7 +428,7 @@ export default function IQTest() {
                 </div>
               ))}
             </div>
-            <div className="flex justify-end">
+            <div className="flex justify-center"> {/* Center align submit button */}
               <button
                 type="submit"
                 className="px-6 py-3 bg-indigo-600 dark:bg-yellow-500 text-white rounded-lg shadow hover:bg-indigo-700 dark:hover:bg-yellow-600 transition-all flex items-center"

@@ -118,8 +118,17 @@ export async function getCareerRecommendations(input: CareerInput): Promise<Care
     return results.some((r: { title: string; description: string; similarity: number }) => r.similarity > 0.7);
   }
 
+  // Helper: Detect generic academic details (e.g., '12th standard', 'class 12', etc.)
+  function isGenericAcademic(academics: string) {
+    const genericPatterns = [
+      /\b12(th)?\b/, /class\s*12/, /senior\s*secondary/, /high\s*school/, /standard\s*12/, /intermediate/, /hsc/, /ssc/, /cbse/, /icse/
+    ];
+    return genericPatterns.some((pat) => pat.test(academics));
+  }
+
   const userInterests = (hobbies + ' ' + interests + ' ' + (keywords || '')).toLowerCase();
   const userAcademics = academicDetails.toLowerCase();
+  const academicIsGeneric = isGenericAcademic(userAcademics);
 
   // Helper: Personality fit scoring for each career
   /**
@@ -319,11 +328,11 @@ export async function getCareerRecommendations(input: CareerInput): Promise<Care
     let interestScore = 0;
     // For Core Engineer, use strict word match for academics
     let academicScore = 0;
-    if (profile.title === 'Core Engineer') {
-      // Only match if strict word match or very strong semantic match
-      if (strictWordMatch(userAcademics, profile.academicKeywords)) {
+    if (profile.title === 'Core Engineer' || profile.title === 'Doctor/Medical Professional') {
+      // Only match if strict word match or very strong semantic match, and not generic academic details
+      if (!academicIsGeneric && strictWordMatch(userAcademics, profile.academicKeywords)) {
         academicScore = profile.academicWeight;
-      } else {
+      } else if (!academicIsGeneric) {
         // Use a higher threshold for semantic match to avoid false positives
         const profiles = profile.academicKeywords.map(k => ({ title: k, description: k }));
         const results = await getSemanticRankedCareers({ userInput: userAcademics, careerProfiles: profiles });
@@ -332,6 +341,9 @@ export async function getCareerRecommendations(input: CareerInput): Promise<Care
         } else {
           academicScore = 0;
         }
+      } else {
+        // If academic details are generic, do not recommend
+        academicScore = 0;
       }
     } else {
       // For other careers, use fuzzy and semantic matching
@@ -497,5 +509,16 @@ export async function getCareerRecommendations(input: CareerInput): Promise<Care
       seen.add(key);
     }
   }
+
+  // Add a general/exploratory recommendation if academic details are generic and no strong match
+  if (academicIsGeneric && deduped.length > 0 && deduped.every(r => r.confidencePercent < 60)) {
+    deduped.unshift({
+      title: getLocalizedText('career_exploration'),
+      description: getLocalizedText('not_sure_start'),
+      confidencePercent: 70,
+      why: 'Your academic details are generic. Explore different fields or specify your stream for more tailored recommendations.'
+    });
+  }
+
   return deduped;
 }
