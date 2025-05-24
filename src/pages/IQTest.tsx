@@ -6,19 +6,40 @@ import { useNavigate } from "react-router-dom";
 import { CareerRecommendationList } from "../components/CareerRecommendationList";
 import { PersonalityProfileForm } from "../components/PersonalityProfileForm";
 
+
 export default function IQTest() {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
-  const [questions, setQuestions] = useState<any[]>([]);
-  const [answers, setAnswers] = useState<any[]>([]);
+  interface Question {
+    question: string;
+    options: string[];
+    answer?: number; // Optional if some questions don't have answers
+  }
+
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [answers, setAnswers] = useState<(number | null)[]>([]);
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [fetching, setFetching] = useState(true);
-  const [personalityProfile, setPersonalityProfile] = useState<any>(null);
+  interface PersonalityProfile {
+    introvertExtrovert: "" | "introvert" | "extrovert" | "ambivert";
+    leadership: "" | "high" | "medium" | "low";
+    creativity: "" | "high" | "medium" | "low";
+    riskTolerance: "" | "high" | "medium" | "low";
+    communication: "" | "high" | "medium" | "low";
+  }
+
+  const [personalityProfile, setPersonalityProfile] = useState<PersonalityProfile | null>(null);
   const [editingPersonality, setEditingPersonality] = useState(false); // State to manage editing of personality profile
-  const [careerRecs, setCareerRecs] = useState<any[]>([]); // Restored for career recommendations
+  interface CareerRecommendation {
+    title: string;
+    description: string;
+    link?: string; // Optional field for additional resources
+  }
+
+  const [careerRecs, setCareerRecs] = useState<CareerRecommendation[]>([]); // Restored for career recommendations
 
   // --- Personality Profile Persistence ---
   useEffect(() => {
@@ -51,7 +72,7 @@ export default function IQTest() {
       return false;
     }
     // Categorize questions
-    function isSequenceQuestion(q: any) {
+    function isSequenceQuestion(q: Question) {
       const text = q.question.toLowerCase();
       return (
         text.includes('sequence') ||
@@ -62,13 +83,13 @@ export default function IQTest() {
         text.includes('number is next')
       );
     }
-    function isOddOneOut(q: any) {
+    function isOddOneOut(q: Question) {
       return q.question.toLowerCase().includes('odd one out');
     }
-    function isRearrange(q: any) {
+    function isRearrange(q: Question) {
       return q.question.toLowerCase().includes('rearrange');
     }
-    function isMath(q: any) {
+    function isMath(q: Question) {
       const text = q.question.toLowerCase();
       return (
         text.includes('square root') ||
@@ -80,7 +101,7 @@ export default function IQTest() {
       );
     }
     // Shuffle with seed for variety
-    function seededShuffle(array: any[], seed: number) {
+    function seededShuffle(array: Question[], seed: number) {
       let m = array.length, t, i;
       while (m) {
         i = Math.floor(Math.abs(Math.sin(seed + m)) * m);
@@ -100,16 +121,16 @@ export default function IQTest() {
     const math = all.filter(isMath);
     const general = all.filter(q => !isSequenceQuestion(q) && !isOddOneOut(q) && !isRearrange(q) && !isMath(q));
     // Pick from each category
-    const selected: any[] = [];
+    const selected: Question[] = [];
     let sequenceCount = 0, oddCount = 0, rearrCount = 0, mathCount = 0;
     const seenQuestions = new Set<string>();
     // Helper to add from a pool
-    function addFromPool(pool: any[], max: number) {
+    function addFromPool(pool: Question[], max: number) {
       for (const q of pool) {
         if (selected.length >= count) break;
         const normText = normalize(q.question).join(' ');
         if (seenQuestions.has(normText)) continue;
-        if (selected.some((sel: any) => isTooSimilar(sel.question, q.question))) continue;
+        if (selected.some((sel: Question) => isTooSimilar(sel.question, q.question))) continue;
         if (pool === seq && sequenceCount >= max) continue;
         if (pool === odd && oddCount >= max) continue;
         if (pool === rearr && rearrCount >= max) continue;
@@ -130,7 +151,7 @@ export default function IQTest() {
     addFromPool(general, 4);
     // If not enough, fill from remaining
     if (selected.length < count) {
-      const remaining = all.filter(q => !seenQuestions.has(normalize(q.question).join(' ')) && selected.every((sel: any) => !isTooSimilar(sel.question, q.question)));
+      const remaining = all.filter(q => !seenQuestions.has(normalize(q.question).join(' ')) && selected.every((sel: Question) => !isTooSimilar(sel.question, q.question)));
       for (const q of remaining) {
         if (selected.length >= count) break;
         selected.push(q);
@@ -164,7 +185,7 @@ export default function IQTest() {
     }
   }, []);
 
-  const calculateIQScore = (userAnswers: any[], questions: any[]) => {
+  const calculateIQScore = (userAnswers: (number | null)[], questions: Question[]) => {
     let correct = 0;
     let total = 0;
     for (let i = 0; i < questions.length; i++) {
@@ -214,6 +235,7 @@ export default function IQTest() {
         score,
       }, { withCredentials: true });
     } catch (err) {
+      console.error(err); 
       setError("Failed to submit score. Try again.");
     } finally {
       setLoading(false);
@@ -323,10 +345,11 @@ export default function IQTest() {
                       location: data.location,
                       personality: personalityProfile
                     });
-                    setCareerRecs(recommendations as any[]);
+                    setCareerRecs(recommendations as CareerRecommendation[]);
                     setSubmitted(true); // Set submitted to true after recommendations are set
                     alert("Thank you! Your details have been saved. See your personalized career pathway below.");
                   } catch (err) {
+                    console.error(err);
                     setError("Failed to save details or fetch recommendations. Please try again.");
                   } finally {
                     setLoading(false);

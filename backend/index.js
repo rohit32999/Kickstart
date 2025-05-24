@@ -30,13 +30,12 @@ mongoose
 // ✅ Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
-
 // === Semantic Ranking Endpoint ===
-const { pipeline } = require('@xenova/transformers');
 let embedder = null;
 
-// Load the model once at startup
+// Load the model once at startup using dynamic import
 (async () => {
+  const { pipeline } = await import('@xenova/transformers');
   embedder = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
 })();
 
@@ -55,26 +54,34 @@ function cosineSimilarity(a, b) {
 app.post('/api/semantic-rank', async (req, res) => {
   try {
     if (!embedder) return res.status(503).json({ error: 'Model loading, try again.' });
+
     const { userInput, careerProfiles } = req.body;
     if (!userInput || !careerProfiles || !Array.isArray(careerProfiles)) {
       return res.status(400).json({ error: 'Missing userInput or careerProfiles array.' });
     }
+
     // Compute embeddings
     const userEmb = (await embedder(userInput))[0][0];
-    const results = await Promise.all(careerProfiles.map(async (profile) => {
-      const text = profile.text || profile.title || profile.name || '';
-      const emb = (await embedder(text))[0][0];
-      const similarity = cosineSimilarity(userEmb, emb);
-      return { ...profile, similarity };
-    }));
+
+    const results = await Promise.all(
+      careerProfiles.map(async (profile) => {
+        const text = profile.text || profile.title || profile.name || '';
+        const emb = (await embedder(text))[0][0];
+        const similarity = cosineSimilarity(userEmb, emb);
+        return { ...profile, similarity };
+      })
+    );
+
     // Sort by similarity descending
     results.sort((a, b) => b.similarity - a.similarity);
     res.json({ results });
+
   } catch (err) {
     console.error('Semantic rank error:', err);
     res.status(500).json({ error: 'Internal server error.' });
   }
 });
+
 
 // ✅ Start Server
 const PORT = process.env.PORT || 5000;

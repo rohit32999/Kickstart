@@ -2584,4 +2584,4 @@ const IQ_QUESTIONS = [
   }
 ];
 
-export default IQ_QUESTIONS;
+module.exports =  IQ_QUESTIONS;
