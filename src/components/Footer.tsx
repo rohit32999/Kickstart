@@ -11,7 +11,7 @@ export function Footer() {
           <div>
             <h3 className="text-xl font-semibold mb-4">Kickstart</h3>
             <p className="text-gray-600 dark:text-gray-400">
-              Empowering careers through AI-driven guidance and blockchain security.
+              Empowering careers through AI-driven guidance.
             </p>
           </div>
 
