@@ -2430,7 +2430,7 @@ const IQ_QUESTIONS = [
       "Carrot",
       "Mango"
     ],
-    "answer": 2
+    "answer": 3
   },
   {
     "question": "Find the odd one out: Cat, Dog, Lion, Car",
@@ -2440,7 +2440,7 @@ const IQ_QUESTIONS = [
       "Lion",
       "Car"
     ],
-    "answer": 3
+    "answer": 4
   },
   {
     "question": "If you rearrange the letters 'CIFAIPC', you get the name of a:",
