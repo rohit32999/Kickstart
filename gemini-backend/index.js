@@ -29,8 +29,8 @@ app.post("/api/chat", async (req, res) => {
           },
         ],
         generationConfig: {
-          maxOutputTokens: 150, // 🔧 Trim long replies
-          temperature: 0.4,      // 🔽 Keep replies focused
+          maxOutputTokens: 150, 
+          temperature: 0.4,      
           topP: 0.8,
           topK: 20,
         },

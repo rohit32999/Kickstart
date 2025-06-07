@@ -1,17 +1,11 @@
-// src/pages/CareerChat.tsx
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { jsPDF } from "jspdf";
-
-type ChatMessage = {
-  role: string;
-  content: string;
-  timestamp: string;
-};
+import { useChat } from "../context/ChatContext"; // ⬅️ Import Chat Context
 
 const CareerChat = () => {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const { messages, setMessages } = useChat(); // ⬅️ Use context
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const bottomRef = useRef<HTMLDivElement | null>(null);
@@ -77,6 +71,12 @@ const CareerChat = () => {
     doc.save("career_chat.pdf");
   };
 
+  const clearChat = () => {
+    if (window.confirm("Are you sure you want to clear the chat?")) {
+      setMessages([]);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 py-12 px-4 text-gray-900 dark:text-white">
       <motion.h1
@@ -93,9 +93,7 @@ const CareerChat = () => {
           {messages.map((msg, i) => (
             <div
               key={i}
-              className={`flex items-start ${
-                msg.role === "user" ? "justify-end" : "justify-start"
-              }`}
+              className={`flex items-start ${msg.role === "user" ? "justify-end" : "justify-start"}`}
             >
               {msg.role === "bot" && (
                 <div className="w-8 h-8 bg-indigo-600 text-white flex items-center justify-center rounded-full mr-2">
@@ -167,6 +165,12 @@ const CareerChat = () => {
               className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition"
             >
               📄 Download PDF
+            </button>
+            <button
+              onClick={clearChat}
+              className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition"
+            >
+              🗑️ Clear Chat
             </button>
           </div>
         </div>
