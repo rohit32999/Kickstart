@@ -105,8 +105,8 @@ export function About() {
         <div className="space-y-4">
           {[
             { label: "Department", value: "Computer Science & Engineering" },
-            { label: "Semester", value: "7th" },
-            { label: "Subject", value: "Project-II (CS781)" },
+            { label: "Semester", value: "8th" },
+            { label: "Subject", value: "Project-III (CS881)" },
             { label: "Institution", value: "Academy of Technology" },
             { label: "Affiliated to", value: "Maulana Abul Kalam Azad University of Technology, West Bengal" },
           ].map((detail, index) => (
