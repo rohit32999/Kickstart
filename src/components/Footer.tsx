@@ -69,7 +69,7 @@ export function Footer() {
             </a>
           </div>
           <p className="mt-8 text-base text-gray-600 dark:text-gray-400 md:mt-0 md:order-1">
-            © 2024 Kickstart. All rights reserved. Under the guidance of Prof. Somen Hati.
+            © 2025 Kickstart. All rights reserved. Under the guidance of Prof. Somen Hati.
           </p>
         </div>
       </div>
