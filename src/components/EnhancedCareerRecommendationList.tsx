@@ -17,6 +17,17 @@ interface EnhancedCareerRecommendation {
   education?: string;
   why?: string;
   resources?: string[];
+  
+  // New AI-powered fields
+  marketTrends?: string;
+  topCompanies?: string[];
+  jobSecurity?: 'High' | 'Medium' | 'Low';
+  workLifeBalance?: 'Excellent' | 'Good' | 'Average' | 'Challenging';
+  salaryBreakdown?: {
+    entry?: string;
+    experienced?: string;
+    senior?: string;
+  };
 }
 
 interface EnhancedCareerRecommendationListProps {
@@ -279,8 +290,7 @@ const EnhancedCareerRecommendationList: React.FC<EnhancedCareerRecommendationLis
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3, delay: index * 0.05 }}
-            >
-              <EnhancedCareerRecommendationCard
+            >              <EnhancedCareerRecommendationCard
                 title={recommendation.title}
                 description={recommendation.description}
                 category={recommendation.category}
@@ -296,6 +306,12 @@ const EnhancedCareerRecommendationList: React.FC<EnhancedCareerRecommendationLis
                 resources={recommendation.resources}
                 onSave={onSaveCareer}
                 isSaved={savedCareers.includes(recommendation.title)}
+                // New AI-powered metadata
+                marketTrends={recommendation.marketTrends}
+                topCompanies={recommendation.topCompanies}
+                jobSecurity={recommendation.jobSecurity}
+                workLifeBalance={recommendation.workLifeBalance}
+                salaryBreakdown={recommendation.salaryBreakdown}
               />
             </motion.div>
           ))}

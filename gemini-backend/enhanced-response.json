@@ -1,0 +1,28 @@
+﻿{
+    "recommendations":  [
+                            {
+                                "title":  "Machine Learning Engineer",
+                                "description":  "Develops and implements machine learning algorithms and models to solve real-world problems.",
+                                "confidencePercent":  90,
+                                "why":  "This career directly aligns with the user\u0027s stated interest in machine learning and AI, coupled with their Computer Science Engineering background.  The high creativity score suggests an aptitude for innovative solutions within the field.  The introverted personality is common among researchers and developers, and the Indian location offers ample opportunities in the growing tech sector.  The 2025 job market shows continued high demand for skilled ML engineers."
+                            },
+                            {
+                                "title":  "AI Research Scientist",
+                                "description":  "Conducts research on cutting-edge AI technologies and publishes findings in academic journals or conferences.",
+                                "confidencePercent":  80,
+                                "why":  "The user\u0027s interest in AI and research, combined with their Computer Science background, makes this a strong fit.  The high creativity score is essential for innovative research.  The introverted personality is well-suited to the independent nature of research work. The Indian location offers some opportunities, though competition may be higher for top research positions.  While the market for AI research scientists is competitive, the demand is expected to remain strong in 2025."
+                            },
+                            {
+                                "title":  "Data Scientist",
+                                "description":  "Collects, analyzes, and interprets large datasets to extract meaningful insights and support business decisions.",
+                                "confidencePercent":  75,
+                                "why":  "This role leverages the user\u0027s computer science background and coding hobby.  While not directly focused on AI development, it utilizes related skills and offers a good entry point into the broader AI ecosystem. The analytical skills implied by an IQ score of 115 are valuable here.  The job market for data scientists in India is robust and expected to continue growing in 2025."
+                            },
+                            {
+                                "title":  "Software Engineer (AI/ML Focus)",
+                                "description":  "Develops software applications incorporating machine learning and AI functionalities.",
+                                "confidencePercent":  70,
+                                "why":  "This is a broader role than a dedicated ML engineer, providing a more accessible entry point for those with a computer science background.  The user\u0027s coding hobby and interest in AI are directly relevant.  It offers a good balance between technical skills and application, suitable for someone with a medium leadership score. The demand for software engineers with AI/ML skills is high and will remain so in 2025 in India."
+                            }
+                        ]
+}

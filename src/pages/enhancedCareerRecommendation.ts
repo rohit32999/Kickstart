@@ -1,3 +1,6 @@
+import { integrateConfusionHandling, analyzeCareerConfusion } from '../utils/careerConfusionHandler';
+import { integrateAdvancedConfusionHandling } from '../utils/advancedCareerConfusionHandler';
+
 // Enhanced career recommendation system with additional metadata for better UI
 
 // Core types moved from basic version
@@ -18,6 +21,7 @@ export interface CareerInput {
   keywords?: string;
   personality?: PersonalityProfile;
   useAI?: boolean;
+  additionalInfo?: string; // For complex user scenarios
 }
 
 export interface EnhancedCareerRecommendation {
@@ -34,6 +38,26 @@ export interface EnhancedCareerRecommendation {
   education?: string;
   why?: string;
   resources?: string[];
+  adaptationNote?: string; // New field for confusion-related notes
+  
+  // New AI-powered fields
+  marketTrends?: string;
+  topCompanies?: string[];
+  jobSecurity?: 'High' | 'Medium' | 'Low';
+  workLifeBalance?: 'Excellent' | 'Good' | 'Average' | 'Challenging';
+  salaryBreakdown?: {
+    entry?: string;
+    experienced?: string;
+    senior?: string;
+  };
+  
+  // Advanced confusion handling fields
+  psychologicalSupport?: string[];
+  culturalConsiderations?: string[];
+  economicRealistic?: boolean;
+  timelineFlexible?: boolean;
+  therapeuticApproach?: boolean;
+  explorationFocus?: boolean;
 }
 
 export interface CareerRecommendation {
@@ -42,6 +66,46 @@ export interface CareerRecommendation {
   why?: string;
   resources?: string[];
   confidencePercent: number;
+  metadata?: EnhancedCareerMetadata;
+}
+
+export interface EnhancedCareerMetadata {
+  category?: string;
+  salaryRange?: {
+    entry?: string;
+    experienced?: string;
+    senior?: string;
+  };
+  skills?: string[];
+  education?: string;
+  workEnvironment?: string;
+  growthPotential?: 'High' | 'Medium' | 'Low';
+  nextSteps?: string[];
+  marketTrends?: string;
+  topCompanies?: string[];
+  jobSecurity?: 'High' | 'Medium' | 'Low';
+  workLifeBalance?: 'Excellent' | 'Good' | 'Average' | 'Challenging';
+}
+
+// Enhanced response interface for confused users
+export interface EnhancedCareerResponse {
+  recommendations: EnhancedCareerRecommendation[];
+  confusionLevel?: 'low' | 'medium' | 'high' | 'extreme';
+  explorationRecommendations?: EnhancedCareerRecommendation[];
+  specializedRecommendations?: EnhancedCareerRecommendation[];
+  clarificationQuestions?: string[];
+  explorationPath?: string[];
+  guidance?: {
+    message: string;
+    priority: string[];
+    timeline: string;
+    supportSystems?: string[];
+    warningFlags?: string[];
+  };
+  // Advanced fields for complex confusion scenarios
+  psychologicalSupport?: string[];
+  culturalAdaptations?: string[];
+  economicRealities?: string[];
 }
 
 // Career metadata database
@@ -238,87 +302,430 @@ export async function getSemanticRankedCareers({ userInput, careerProfiles }: { 
 
 // --- Main Recommendation Logic ---
 export async function getCareerRecommendations(input: CareerInput): Promise<CareerRecommendation[]> {
-  // Simplified implementation that provides basic career recommendations
-  // This replaces the complex logic from the original file
-  const { iqScore, hobbies, interests, academicDetails, keywords } = input;
+  const { iqScore, hobbies, interests, academicDetails, location, keywords, personality, useAI } = input;
   
-  const defaultRecommendations: CareerRecommendation[] = [
-    {
-      title: 'Software Developer',
-      description: 'Build software applications and systems using programming languages.',
-      confidencePercent: Math.min(95, Math.max(60, iqScore + 10)),
-      why: 'Good fit based on your profile and technical interests.'
-    },
-    {
-      title: 'Data Scientist',
-      description: 'Analyze data to extract insights and support decision-making.',
-      confidencePercent: Math.min(90, Math.max(55, iqScore + 5)),
-      why: 'Your analytical skills make this a strong match.'
-    }
-  ];
+  // Use AI-powered recommendations if enabled (with fallback)
+  if (useAI) {
+    try {
+      const apiUrl = import.meta.env.VITE_GEMINI_API_URL || 'http://localhost:5001';
+      const response = await fetch(`${apiUrl}/api/career-recommendations`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          iqScore,
+          hobbies,
+          interests,
+          academicDetails,
+          location,
+          keywords,
+          personality
+        }),
+      });
 
-  // Simple keyword matching logic
+      if (!response.ok) {
+        console.warn('AI backend not available, falling back to local recommendations');
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+        if (data.recommendations && Array.isArray(data.recommendations)) {
+        return data.recommendations.map((rec: any) => ({
+          title: rec.title || 'Career Opportunity',
+          description: rec.description || 'Explore this career path based on your profile.',
+          confidencePercent: Math.max(30, Math.min(100, rec.confidencePercent || 70)),
+          why: rec.why || 'AI-generated recommendation based on your profile.',
+          metadata: rec.metadata ? {
+            category: rec.metadata.category,
+            salaryRange: rec.metadata.salaryRange,
+            skills: rec.metadata.skills,
+            education: rec.metadata.education,
+            workEnvironment: rec.metadata.workEnvironment,
+            growthPotential: rec.metadata.growthPotential,
+            nextSteps: rec.metadata.nextSteps,
+            marketTrends: rec.metadata.marketTrends,
+            topCompanies: rec.metadata.topCompanies,
+            jobSecurity: rec.metadata.jobSecurity,
+            workLifeBalance: rec.metadata.workLifeBalance
+          } : undefined
+        }));
+      }    } catch (error) {
+      console.error('AI career recommendations failed, using enhanced fallback:', error);
+      // Fall through to enhanced backup logic
+    }
+  }
+
+  // Enhanced backup/fallback logic for when AI is disabled or fails
   const userText = `${hobbies} ${interests} ${academicDetails} ${keywords || ''}`.toLowerCase();
   
-  if (userText.includes('medicine') || userText.includes('doctor') || userText.includes('mbbs')) {
-    defaultRecommendations.unshift({
+  // Enhanced recommendation logic with better pattern matching
+  const recommendations: CareerRecommendation[] = [];
+  
+  // Medical field detection
+  if (userText.includes('medicine') || userText.includes('doctor') || userText.includes('mbbs') || 
+      userText.includes('medical') || userText.includes('healthcare') || userText.includes('neet')) {
+    recommendations.push({
       title: 'Doctor/Medical Professional',
       description: 'Provide medical care and help people with health issues.',
       confidencePercent: 95,
-      why: 'Strong match based on your medical interests and background.'
+      why: 'Strong match based on your medical interests and background.',
+      metadata: {
+        category: 'Healthcare',
+        salaryRange: { entry: '$200,000', experienced: '$300,000', senior: '$500,000+' },
+        skills: ['Medical Knowledge', 'Patient Care', 'Diagnosis', 'Communication', 'Empathy'],
+        education: 'MBBS + Specialization',
+        workEnvironment: 'Hospitals, Clinics, Private Practice',
+        growthPotential: 'High',
+        nextSteps: ['Complete MBBS', 'Pass licensing exams', 'Complete residency', 'Specialize if desired']
+      }
     });
   }
   
-  if (userText.includes('engineer') || userText.includes('technical')) {
-    defaultRecommendations.push({
+  // Technology field detection
+  if (userText.includes('programming') || userText.includes('coding') || userText.includes('software') || 
+      userText.includes('computer') || userText.includes('technology') || userText.includes('tech') ||
+      userText.includes('ai') || userText.includes('machine learning') || userText.includes('data')) {
+    recommendations.push({
+      title: 'Software Developer',
+      description: 'Build software applications and systems using programming languages.',
+      confidencePercent: Math.min(95, Math.max(60, iqScore + 10)),
+      why: 'Excellent fit based on your technical interests and analytical abilities.',
+      metadata: {
+        category: 'Technology',
+        salaryRange: { entry: '$70,000', experienced: '$120,000', senior: '$180,000+' },
+        skills: ['Programming', 'Problem Solving', 'Software Design', 'Testing', 'Version Control'],
+        education: 'Bachelor\'s in Computer Science or related field',
+        workEnvironment: 'Office or Remote',
+        growthPotential: 'High',
+        nextSteps: ['Learn programming languages', 'Build a portfolio', 'Apply for internships', 'Contribute to open source']
+      }
+    });
+    
+    if (userText.includes('ai') || userText.includes('machine learning') || userText.includes('data')) {
+      recommendations.push({
+        title: 'AI/ML Engineer',
+        description: 'Develop artificial intelligence and machine learning solutions.',
+        confidencePercent: Math.min(90, Math.max(55, iqScore + 5)),
+        why: 'Perfect match for your AI and data science interests.',
+        metadata: {
+          category: 'Technology',
+          salaryRange: { entry: '$90,000', experienced: '$150,000', senior: '$220,000+' },
+          skills: ['Python', 'Machine Learning', 'Data Analysis', 'Statistics', 'Deep Learning'],
+          education: 'Bachelor\'s/Master\'s in Computer Science, Data Science, or Mathematics',
+          workEnvironment: 'Tech Companies, Research Labs',
+          growthPotential: 'High'
+        }
+      });
+    }
+  }
+  
+  // Engineering field detection
+  if (userText.includes('engineering') || userText.includes('mechanical') || userText.includes('electrical') || 
+      userText.includes('civil') || userText.includes('chemical')) {
+    recommendations.push({
       title: 'Engineer',
       description: 'Design and build systems, structures, or technology solutions.',
       confidencePercent: Math.min(85, Math.max(50, iqScore)),
-      why: 'Engineering aligns with your technical background.'
+      why: 'Engineering aligns with your technical background and problem-solving interests.',
+      metadata: {
+        category: 'Engineering',
+        salaryRange: { entry: '$65,000', experienced: '$90,000', senior: '$130,000+' },
+        skills: ['Engineering Principles', 'Technical Analysis', 'Project Management', 'Problem Solving'],
+        education: 'Bachelor\'s in Engineering',
+        workEnvironment: 'Manufacturing, Construction, Energy',
+        growthPotential: 'Medium'
+      }
     });
   }
-
-  return defaultRecommendations.slice(0, 4);
+  
+  // Business field detection
+  if (userText.includes('business') || userText.includes('management') || userText.includes('finance') || 
+      userText.includes('accounting') || userText.includes('marketing')) {
+    recommendations.push({
+      title: 'Business Professional',
+      description: 'Work in business management, finance, or related commercial fields.',
+      confidencePercent: Math.min(80, Math.max(50, iqScore - 5)),
+      why: 'Good match for your business interests and leadership potential.',
+      metadata: {
+        category: 'Business',
+        salaryRange: { entry: '$50,000', experienced: '$80,000', senior: '$150,000+' },
+        skills: ['Leadership', 'Communication', 'Strategic Thinking', 'Financial Analysis'],
+        education: 'Bachelor\'s in Business, Economics, or related field',
+        workEnvironment: 'Corporate Offices',
+        growthPotential: 'Medium'
+      }
+    });
+  }
+  
+  // Creative field detection
+  if (userText.includes('art') || userText.includes('design') || userText.includes('creative') || 
+      userText.includes('writing') || userText.includes('music') || userText.includes('photography')) {
+    recommendations.push({
+      title: 'Creative Professional',
+      description: 'Express creativity through various artistic and design mediums.',
+      confidencePercent: Math.min(75, Math.max(40, iqScore - 10)),
+      why: 'Matches your creative interests and artistic talents.',
+      metadata: {
+        category: 'Creative',
+        salaryRange: { entry: '$35,000', experienced: '$60,000', senior: '$100,000+' },
+        skills: ['Creativity', 'Design Thinking', 'Communication', 'Technical Skills'],
+        education: 'Bachelor\'s in Fine Arts, Design, or related field',
+        workEnvironment: 'Studios, Agencies, Freelance',
+        growthPotential: 'Medium'
+      }
+    });
+  }
+  
+  // Default recommendations if no specific field detected
+  if (recommendations.length === 0) {
+    recommendations.push(
+      {
+        title: 'Data Scientist',
+        description: 'Analyze data to extract insights and support decision-making.',
+        confidencePercent: Math.min(80, Math.max(55, iqScore + 5)),
+        why: 'Your analytical skills make this a strong match.',
+        metadata: {
+          category: 'Technology',
+          salaryRange: { entry: '$80,000', experienced: '$120,000', senior: '$160,000+' },
+          skills: ['Statistics', 'Python/R', 'Data Visualization', 'SQL', 'Business Intelligence'],
+          education: 'Bachelor\'s in Statistics, Math, Computer Science, or related field',
+          workEnvironment: 'Office or Remote',
+          growthPotential: 'High'
+        }
+      },
+      {
+        title: 'Career Exploration',
+        description: 'Explore different career paths to find what interests you most.',
+        confidencePercent: 70,
+        why: 'Take time to explore various fields and discover your passion.',
+        metadata: {
+          category: 'General',
+          salaryRange: { entry: 'Varies', experienced: 'Varies', senior: 'Varies' },
+          skills: ['Self-assessment', 'Research', 'Networking', 'Adaptability'],
+          education: 'Continue current education while exploring',
+          workEnvironment: 'Various',
+          growthPotential: 'High'
+        }
+      }
+    );
+  }
+  
+  return recommendations.slice(0, 4); // Return top 4 recommendations
 }
 
-export async function getEnhancedCareerRecommendations(input: CareerInput): Promise<EnhancedCareerRecommendation[]> {
+export async function getEnhancedCareerRecommendations(input: CareerInput): Promise<EnhancedCareerResponse> {
   try {
     // Get basic recommendations first
     const basicRecommendations = await getCareerRecommendations({ ...input, useAI: true });
     
-    // Enhance each recommendation with additional metadata
-    const enhancedRecommendations: EnhancedCareerRecommendation[] = basicRecommendations.map((rec: CareerRecommendation) => {
-      const metadata = careerMetadata[rec.title] || {};
+    // Analyze user confusion level first to determine which handler to use
+    const confusionAnalysis = analyzeCareerConfusion(input);
+    
+    // For complex/extreme confusion, use advanced handling
+    if (confusionAnalysis.confusionLevel === 'extreme' || 
+        (input.additionalInfo && 
+         (input.additionalInfo.toLowerCase().includes('paralyzed') ||
+          input.additionalInfo.toLowerCase().includes('cultural') ||
+          input.additionalInfo.toLowerCase().includes('perfectionist') ||
+          input.additionalInfo.toLowerCase().includes('imposter')))) {
+      
+      // Use advanced confusion handling for complex scenarios
+      const advancedResult = integrateAdvancedConfusionHandling(input, basicRecommendations);
+      
+      return {
+        recommendations: advancedResult.primaryRecommendations.map((rec: any) => ({
+          title: rec.title,
+          description: rec.description,
+          category: rec.category || 'General',
+          confidencePercent: rec.confidencePercent,
+          matchScore: rec.confidencePercent,
+          why: rec.why,
+          nextSteps: rec.nextSteps,
+          resources: rec.resources || [],
+          adaptationNote: rec.adaptationNote,
+          psychologicalSupport: rec.psychologicalSupport,
+          culturalConsiderations: rec.culturalConsiderations,
+          economicRealistic: rec.economicRealistic,
+          timelineFlexible: rec.timelineFlexible,
+          therapeuticApproach: rec.therapeuticApproach,
+          explorationFocus: rec.explorationFocus
+        })),
+        confusionLevel: advancedResult.guidance ? 'extreme' : 'high',
+        explorationRecommendations: advancedResult.explorationRecommendations?.map((rec: any) => ({
+          title: rec.title,
+          description: rec.description,
+          category: rec.category || 'Exploration',
+          confidencePercent: rec.confidencePercent,
+          why: rec.why,
+          nextSteps: rec.nextSteps,
+          resources: rec.resources || [],
+          therapeuticApproach: rec.therapeuticApproach,
+          psychologicalSupport: rec.psychologicalSupport
+        })),
+        specializedRecommendations: advancedResult.therapeuticRecommendations?.map((rec: any) => ({
+          title: rec.title,
+          description: rec.description,
+          category: 'Therapeutic',
+          confidencePercent: rec.confidencePercent,
+          why: rec.why,
+          nextSteps: rec.nextSteps,
+          therapeuticApproach: true
+        })),
+        clarificationQuestions: advancedResult.clarificationQuestions,
+        explorationPath: advancedResult.explorationPath,
+        guidance: advancedResult.guidance,
+        psychologicalSupport: advancedResult.psychologicalSupport,
+        culturalAdaptations: advancedResult.culturalAdaptations,
+        economicRealities: advancedResult.economicRealities
+      };
+    }
+    
+    // For standard confusion levels, use regular adaptive handling
+    const adaptiveResult = integrateConfusionHandling(input, basicRecommendations);
+    
+    // If user has low confusion, proceed with standard enhanced recommendations
+    if (adaptiveResult.confusionLevel === 'low' || !adaptiveResult.confusionLevel) {
+      const enhancedRecommendations: EnhancedCareerRecommendation[] = basicRecommendations.map((rec: CareerRecommendation) => {
+        const staticMetadata = careerMetadata[rec.title] || {};
+        const aiMetadata = rec.metadata;
+        
+        // Merge AI metadata with static fallback data
+        return {
+          title: rec.title,
+          description: rec.description,
+          category: aiMetadata?.category || staticMetadata.category || 'General',
+          confidencePercent: rec.confidencePercent,
+          matchScore: rec.confidencePercent,
+          
+          // Salary information - prefer AI data, fallback to static
+          salaryRange: aiMetadata?.salaryRange?.experienced || staticMetadata.salaryRange,
+          
+          // Skills - merge AI and static data
+          skills: aiMetadata?.skills || staticMetadata.skills,
+          
+          // Next steps - prefer AI data for personalization
+          nextSteps: aiMetadata?.nextSteps || staticMetadata.nextSteps,
+          
+          // Growth potential
+          growthPotential: (aiMetadata?.growthPotential?.toLowerCase() as 'high' | 'medium' | 'low') || staticMetadata.growthPotential || 'medium',
+          
+          // Work environment
+          workEnvironment: aiMetadata?.workEnvironment || staticMetadata.workEnvironment,
+          
+          // Education requirements
+          education: aiMetadata?.education || staticMetadata.education,
+          
+          // Why explanation
+          why: rec.why,
+          
+          // Resources - keep static for now
+          resources: staticMetadata.resources || [],
+          
+          // New AI-powered fields
+          marketTrends: aiMetadata?.marketTrends,
+          topCompanies: aiMetadata?.topCompanies,
+          jobSecurity: aiMetadata?.jobSecurity,
+          workLifeBalance: aiMetadata?.workLifeBalance,
+          
+          // Detailed salary breakdown
+          salaryBreakdown: aiMetadata?.salaryRange ? {
+            entry: aiMetadata.salaryRange.entry,
+            experienced: aiMetadata.salaryRange.experienced,
+            senior: aiMetadata.salaryRange.senior
+          } : undefined
+        };
+      });
+
+      return {
+        recommendations: enhancedRecommendations,
+        confusionLevel: 'low'
+      };
+    }
+
+    // For confused users, provide comprehensive adaptive response
+    const primaryEnhanced: EnhancedCareerRecommendation[] = adaptiveResult.primaryRecommendations.map((rec: any) => {
+      const staticMetadata = careerMetadata[rec.title] || {};
       
       return {
         title: rec.title,
         description: rec.description,
-        category: metadata.category || 'General',
+        category: staticMetadata.category || 'General',
         confidencePercent: rec.confidencePercent,
-        matchScore: rec.confidencePercent, // Use confidence as match score
-        salaryRange: metadata.salaryRange,
-        skills: metadata.skills,
-        nextSteps: metadata.nextSteps,
-        growthPotential: metadata.growthPotential || 'medium',
-        workEnvironment: metadata.workEnvironment,
-        education: metadata.education,
+        matchScore: rec.confidencePercent,
+        salaryRange: staticMetadata.salaryRange,
+        skills: staticMetadata.skills,
+        nextSteps: staticMetadata.nextSteps,
+        growthPotential: staticMetadata.growthPotential || 'medium',
+        workEnvironment: staticMetadata.workEnvironment,
+        education: staticMetadata.education,
         why: rec.why,
-        resources: metadata.resources || []
+        resources: staticMetadata.resources || [],
+        adaptationNote: rec.adaptationNote // Include confusion-related notes
       };
-    });    return enhancedRecommendations;
+    });
+
+    const explorationEnhanced: EnhancedCareerRecommendation[] = adaptiveResult.explorationRecommendations?.map((rec: any) => ({
+      title: rec.title,
+      description: rec.description,
+      category: rec.category || 'Exploration',
+      confidencePercent: rec.confidencePercent,
+      matchScore: rec.confidencePercent,
+      why: rec.why,
+      nextSteps: rec.nextSteps,
+      resources: rec.resources || [],
+      skills: ['Self-assessment', 'Research', 'Networking', 'Adaptability'],
+      growthPotential: 'high' as const,
+      workEnvironment: 'Various',
+      education: 'Open to all backgrounds'
+    })) || [];
+
+    const specializedEnhanced: EnhancedCareerRecommendation[] = adaptiveResult.specializedRecommendations?.map((rec: any) => ({
+      title: rec.title,
+      description: rec.description,
+      category: rec.category || 'Specialized',
+      confidencePercent: rec.confidencePercent,
+      matchScore: rec.confidencePercent,
+      why: rec.why,
+      nextSteps: rec.nextSteps || [],
+      resources: rec.resources || [],
+      skills: ['Versatility', 'Problem-solving', 'Communication'],
+      growthPotential: 'medium' as const,
+      workEnvironment: 'Varied',
+      education: 'Flexible requirements'
+    })) || [];
+
+    return {
+      recommendations: primaryEnhanced,
+      confusionLevel: adaptiveResult.confusionLevel,
+      explorationRecommendations: explorationEnhanced,
+      specializedRecommendations: specializedEnhanced,
+      clarificationQuestions: adaptiveResult.clarificationQuestions,
+      explorationPath: adaptiveResult.explorationPath,
+      guidance: adaptiveResult.guidance
+    };
+
   } catch (error) {
     console.error('Error getting enhanced career recommendations:', error);
     
     // Fallback to default recommendations if everything fails
-    return [
-      {
-        title: 'Career Exploration',
-        description: 'Explore different career paths to find what interests you most.',
-        category: 'General',
-        confidencePercent: 70,
-        matchScore: 70,
-        ...careerMetadata['Career Exploration']
+    return {
+      recommendations: [
+        {
+          title: 'Career Exploration',
+          description: 'Explore different career paths to find what interests you most.',
+          category: 'General',
+          confidencePercent: 70,
+          matchScore: 70,
+          ...careerMetadata['Career Exploration']
+        }
+      ],
+      confusionLevel: 'medium',
+      guidance: {
+        message: "We couldn't process your full profile, but here are some exploration options:",
+        priority: ['Complete a career assessment', 'Talk to a career counselor'],
+        timeline: '1-3 months of exploration recommended'
       }
-    ];
+    };
   }
 }

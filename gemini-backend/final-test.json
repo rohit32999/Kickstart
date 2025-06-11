@@ -1,0 +1,28 @@
+﻿{
+    "recommendations":  [
+                            {
+                                "title":  "Machine Learning Engineer",
+                                "description":  "Develops, implements, and maintains machine learning algorithms and models to solve complex problems.",
+                                "confidencePercent":  90,
+                                "why":  "This aligns perfectly with the user\u0027s stated interest in machine learning, their Computer Science Engineering background, and their hobby of coding.  The high creativity score suggests they\u0027ll thrive in the innovative aspects of this field. The introverted personality is well-suited to the often independent nature of research and development in machine learning. The Indian job market in 2025 shows a high demand for skilled ML engineers, making this a strong and realistic career path."
+                            },
+                            {
+                                "title":  "Data Scientist",
+                                "description":  "Collects, analyzes, and interprets large datasets to extract meaningful insights and support business decisions.",
+                                "confidencePercent":  85,
+                                "why":  "The user\u0027s interest in data analysis and computer science background are directly relevant.  Their coding hobby demonstrates practical skills, while the high IQ score suggests the analytical abilities needed for data science. The demand for data scientists remains robust in India\u0027s 2025 job market. The introverted personality can be an asset in focused analytical work."
+                            },
+                            {
+                                "title":  "Research Scientist (AI/ML)",
+                                "description":  "Conducts independent research and development in artificial intelligence and machine learning, contributing to advancements in the field.",
+                                "confidencePercent":  75,
+                                "why":  "This role caters to the user\u0027s interest in research and coding, leveraging their computer science background.  The high creativity score is crucial for innovative research, and the introverted personality is well-suited to independent research work.  While the competition is high, India\u0027s growing AI/ML sector offers opportunities for skilled researchers."
+                            },
+                            {
+                                "title":  "Business Intelligence Analyst",
+                                "description":  "Analyzes business data to identify trends, improve efficiency, and support strategic decision-making.",
+                                "confidencePercent":  65,
+                                "why":  "This option utilizes the user\u0027s data analysis interest and computer science skills, applying them to a business context.  While not directly related to machine learning, it offers a path leveraging similar analytical skills. The medium leadership score suggests potential for growth within the role, and the location in India offers various opportunities in this field."
+                            }
+                        ]
+}

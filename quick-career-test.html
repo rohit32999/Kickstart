@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Career Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin: 15px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .results {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        .recommendation {
+            margin: 15px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+        }
+        .loading {
+            text-align: center;
+            color: #666;
+        }
+        .error {
+            color: #dc3545;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .success {
+            color: #155724;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Quick Career Test</h1>
+        <p>Test the career recommendation system with simplified inputs</p>
+        
+        <form id="careerForm">
+            <div class="form-group">
+                <label for="interests">Interests:</label>
+                <input type="text" id="interests" value="books" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="hobbies">Hobbies:</label>
+                <input type="text" id="hobbies" value="listening music" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="academic">Academic Background:</label>
+                <input type="text" id="academic" value="I am in 12th standard now" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="keywords">Career Keywords:</label>
+                <input type="text" id="keywords" value="Become a doctor">
+            </div>
+            
+            <button type="submit" id="submitBtn">Get Career Recommendations</button>
+        </form>
+        
+        <div id="results" style="display: none;"></div>
+    </div>
+
+    <script>
+        document.getElementById('careerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const resultsDiv = document.getElementById('results');
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Generating Recommendations...';
+            resultsDiv.style.display = 'block';
+            resultsDiv.innerHTML = '<div class="loading">🔄 Processing your request...</div>';
+            
+            const formData = {
+                iqScore: 100,
+                hobbies: document.getElementById('hobbies').value,
+                interests: document.getElementById('interests').value,
+                academicDetails: document.getElementById('academic').value,
+                keywords: document.getElementById('keywords').value,
+                location: '',
+                useAI: true,
+                additionalInfo: '',
+                personality: {
+                    introvertExtrovert: '',
+                    leadership: '',
+                    creativity: '',
+                    riskTolerance: '',
+                    communication: ''
+                }
+            };
+            
+            try {
+                console.log('🚀 Sending request to backend:', formData);
+                
+                const response = await fetch('http://localhost:5001/api/career-recommendations', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('✅ Received response:', data);
+                
+                if (data.recommendations && data.recommendations.length > 0) {
+                    let resultsHTML = '<div class="success">✅ Successfully generated ' + data.recommendations.length + ' career recommendations!</div>';
+                    
+                    data.recommendations.forEach((rec, index) => {
+                        resultsHTML += `
+                            <div class="recommendation">
+                                <h3>${rec.title}</h3>
+                                <p><strong>Description:</strong> ${rec.description}</p>
+                                <p><strong>Confidence:</strong> ${rec.confidencePercent || 'N/A'}%</p>
+                                <p><strong>Why:</strong> ${rec.why || 'AI-generated recommendation'}</p>
+                                ${rec.metadata && rec.metadata.salaryRange ? `<p><strong>Salary:</strong> ${rec.metadata.salaryRange.experienced || rec.metadata.salaryRange}</p>` : ''}
+                            </div>
+                        `;
+                    });
+                    
+                    resultsDiv.innerHTML = resultsHTML;
+                } else {
+                    resultsDiv.innerHTML = '<div class="error">❌ No recommendations received. Please try again.</div>';
+                }
+                
+            } catch (error) {
+                console.error('❌ Error:', error);
+                resultsDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Get Career Recommendations';
+            }
+        });
+    </script>
+</body>
+</html>

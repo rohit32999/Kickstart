@@ -14,8 +14,9 @@ import Vision from "./pages/Vision";
 import { Profile } from "./pages/Profile";
 import { Resources } from "./pages/Resources";
 import { Certification } from "./pages/certification";
-import CareerChat from "./pages/CareerChat"; // adjust path if different
+import CareerChat from "./pages/CareerChat";
 import AICareerGuidance from "./pages/AICareerGuidance";
+import CareerConfusionDemo from "./pages/CareerConfusionDemo";
 
 const App: React.FC = () => {
   const defaultTitle = useRef(document.title);
@@ -51,7 +52,8 @@ const App: React.FC = () => {
         <Route path="/IQTest" element={<EnhancedIQTest />} />
         <Route path="/iq-test-basic" element={<EnhancedIQTest />} />        <Route path="/resources" element={<Resources />} />
         <Route path="/certification" element={<Certification />} />
-      <Route path="/AICareerGuidance" element={<AICareerGuidance />} />
+        <Route path="/AICareerGuidance" element={<AICareerGuidance />} />
+        <Route path="/career-confusion-demo" element={<CareerConfusionDemo />} />
       </Routes>
       <Footer />
     </div>
