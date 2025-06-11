@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 
 interface Resource {
@@ -818,10 +818,9 @@ export function Resources() {
   const filteredResources = selectedCategory === "All"
     ? allResources
     : allResources.filter((res) => res.category === selectedCategory);
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100 py-10 px-4">
-      <h1 className="text-4xl font-bold text-center text-indigo-700 mb-8">Explore Learning Resources</h1>
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 py-10 px-4">
+      <h1 className="text-4xl font-bold text-center text-indigo-700 dark:text-yellow-400 mb-8">Explore Learning Resources</h1>
 
       <div className="flex flex-wrap gap-4 justify-center mb-10">
         {categories.map((category) => (
@@ -829,8 +828,8 @@ export function Resources() {
             key={category}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300
               ${selectedCategory === category
-                ? "bg-indigo-600 text-white"
-                : "bg-white text-indigo-600 border border-indigo-300 hover:bg-indigo-100"}`}
+                ? "bg-indigo-600 dark:bg-yellow-500 text-white dark:text-gray-900"
+                : "bg-white dark:bg-gray-800 text-indigo-600 dark:text-yellow-400 border border-indigo-300 dark:border-yellow-400 hover:bg-indigo-100 dark:hover:bg-gray-700"}`}
             onClick={() => setSelectedCategory(category)}
           >
             {category}
@@ -846,11 +845,11 @@ export function Resources() {
             rel="noopener noreferrer"
             whileHover={{ scale: 1.05 }}
             key={index}
-            className="block bg-white rounded-xl shadow-lg p-6 border border-gray-200 hover:border-indigo-500 transition-all"
+            className="block bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700 hover:border-indigo-500 dark:hover:border-yellow-400 transition-all"
           >
-            <h3 className="text-xl font-bold text-indigo-700 mb-2">{resource.title}</h3>
-            <p className="text-gray-600">{resource.description}</p>
-            <span className="text-xs mt-2 inline-block text-indigo-500 font-medium">{resource.category}</span>
+            <h3 className="text-xl font-bold text-indigo-700 dark:text-yellow-400 mb-2">{resource.title}</h3>
+            <p className="text-gray-600 dark:text-gray-300">{resource.description}</p>
+            <span className="text-xs mt-2 inline-block text-indigo-500 dark:text-yellow-400 font-medium">{resource.category}</span>
           </motion.a>
         ))}
       </div>
