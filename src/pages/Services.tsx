@@ -8,7 +8,6 @@ export function Services() {
   // const { user } = useAuth();
   useAuth();
   const navigate = useNavigate();
-
   const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement>, title: string) => {
     event.preventDefault();
     if (title === "Learning Resources") {
@@ -19,6 +18,9 @@ export function Services() {
     }
     else if (title === "AI Career Guidance") {
       navigate("/AICareerGuidance");
+    }
+    else if (title === "AI Chat Support") {
+      navigate("/services/career-chat");
     }
     else {
       navigate("/dashboard");
@@ -58,16 +60,17 @@ export function Services() {
         "Industry-specific training",
         "Progress tracking"
       ]
-    },
-    {
+    },    {
       icon: MessageSquare,
       title: "AI Chat Support",
-      description: "Get instant answers to your career-related questions from our AI-powered chatbot.",
+      description: "Get instant answers to your career-related questions from our AI-powered chatbot with personalized career guidance.",
       features: [
-        "24/7 availability",
-        "Instant responses",
-        "Personalized guidance",
-        "Multi-language support"
+        "24/7 career chat availability",
+        "Instant AI-powered responses",
+        "Personalized career guidance",
+        "Multi-language support",
+        "Career recommendation chat",
+        "PDF export of conversations"
       ]
     },
     {

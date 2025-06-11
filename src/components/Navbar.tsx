@@ -1,8 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Menu, User, LogOut, X } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
+
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5002';
 
 export function Navbar() {
   const { user, logout } = useAuth();
@@ -11,6 +13,7 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [profilePicUrl, setProfilePicUrl] = useState<string>("/default-avatar.png");
+  const [profilePicError, setProfilePicError] = useState(false);
 
   const [isDarkMode, setIsDarkMode] = useState(() => {
     return localStorage.getItem("theme") === "dark";
@@ -25,10 +28,10 @@ export function Navbar() {
       localStorage.setItem("theme", "light");
     }
   }, [isDarkMode]);
-
   useEffect(() => {
     if (user?.profilePic) {
-      setProfilePicUrl(`http://localhost:5000${user.profilePic}?t=${new Date().getTime()}`);
+      setProfilePicUrl(`${API_BASE_URL}${user.profilePic}?t=${new Date().getTime()}`);
+      setProfilePicError(false); // Reset error state when new profile pic loads
     }
   }, [user?.profilePic]);
 
@@ -36,15 +39,26 @@ export function Navbar() {
     location.pathname === path
       ? "text-indigo-600 font-semibold dark:text-yellow-300"
       : "text-gray-600 hover:text-indigo-600 dark:text-gray-300 dark:hover:text-yellow-300";
-
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setDropdownOpen(false);
       }
     };
+    
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setDropdownOpen(false);
+        setMobileMenuOpen(false);
+      }
+    };
+    
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
   }, []);
 
   useEffect(() => {
@@ -59,14 +73,10 @@ export function Navbar() {
           {/* Brand */}
           <Link to="/" className="text-2xl font-bold text-indigo-600 dark:text-yellow-300">
             Kickstart
-          </Link>
-
-          {/* Desktop Nav Links */}
-          <div className="hidden md:flex items-center space-x-8">
+          </Link>          {/* Desktop Nav Links */}          <div className="hidden md:flex items-center space-x-8">
             <Link to="/" className={isActive("/")}>Home</Link>
             <Link to="/about" className={isActive("/about")}>About</Link>
             <Link to="/services" className={isActive("/services")}>Services</Link>
-            <Link to="/career-chat" className={isActive("/career-chat")}>Career Chat</Link>
             <Link to="/contact" className={isActive("/contact")}>Contact</Link>
            
           </div>
@@ -85,16 +95,18 @@ export function Navbar() {
             {/* User Dropdown or Login */}
             <div className="relative hidden md:block" ref={dropdownRef}>
               {user ? (
-                <>
-                  <button
+                <>                  <button
                     className="flex items-center space-x-2 focus:outline-none"
                     onClick={() => setDropdownOpen((prev) => !prev)}
+                    aria-label="User menu"
+                    aria-expanded={dropdownOpen}
                   >
-                    {user?.profilePic ? (
+                    {user?.profilePic && !profilePicError ? (
                       <img
                         src={profilePicUrl}
                         alt="Profile"
                         className="w-10 h-10 rounded-full object-cover border border-gray-300 shadow-sm"
+                        onError={() => setProfilePicError(true)}
                       />
                     ) : (
                       <span className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center border border-gray-300 shadow-sm">
@@ -174,13 +186,10 @@ export function Navbar() {
       <div
         className={`fixed top-16 right-0 h-[calc(100vh-64px)] w-3/4 max-w-xs bg-white dark:bg-gray-900 z-40 transform transition-transform duration-300 ease-in-out ${
           mobileMenuOpen ? "translate-x-0" : "translate-x-full"
-        } md:hidden shadow-lg border-l dark:border-gray-700 py-6 px-6 flex flex-col gap-4`}
-      >
-        <Link to="/" className={isActive("/")}>Home</Link>
+        } md:hidden shadow-lg border-l dark:border-gray-700 py-6 px-6 flex flex-col gap-4`}      >        <Link to="/" className={isActive("/")}>Home</Link>
         <Link to="/about" className={isActive("/about")}>About</Link>
         <Link to="/services" className={isActive("/services")}>Services</Link>
         <Link to="/contact" className={isActive("/contact")}>Contact</Link>
-        <Link to="/career-chat" className={isActive("/career-chat")}>Career Chat</Link>
 
         <button
           onClick={() => setIsDarkMode(!isDarkMode)}

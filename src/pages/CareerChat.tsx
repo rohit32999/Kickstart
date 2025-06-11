@@ -1,19 +1,29 @@
-import React, { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { jsPDF } from "jspdf";
-import { useChat } from "../context/ChatContext"; // ⬅️ Import Chat Context
+import { useChat } from "../context/ChatContext";
 
 const CareerChat = () => {
-  const { messages, setMessages } = useChat(); // ⬅️ Use context
+  const { messages, setMessages } = useChat();
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const bottomRef = useRef<HTMLDivElement | null>(null);
+  const chatContainerRef = useRef<HTMLDivElement | null>(null);
 
   const getTime = () => {
     const now = new Date();
     return now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
+  // Auto-scroll to bottom of chat container when messages change
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      const container = chatContainerRef.current;
+      container.scrollTo({
+        top: container.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
+  }, [messages, isTyping]);
 
   const sendMessage = async () => {
     if (!input.trim()) return;
@@ -27,25 +37,37 @@ const CareerChat = () => {
     setIsTyping(true);
 
     try {
-      const res = await axios.post("http://localhost:5001/api/chat", {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+      const res = await axios.post(`${apiUrl}/api/chat`, {
         message: input,
       });
 
       const botReply = res.data.reply || "No response received.";
-      setMessages([
-        ...newMessages,
-        { role: "bot", content: botReply, timestamp: getTime() },
-      ]);
+      
+      // Small delay before showing bot response for better UX
+      setTimeout(() => {
+        setMessages([
+          ...newMessages,
+          { role: "bot", content: botReply, timestamp: getTime() },
+        ]);
+      }, 500);
     } catch (err: any) {
-      console.error("❌ Gemini Proxy Error:", err.response?.data || err.message);
-      setMessages([
-        ...newMessages,
-        {
-          role: "bot",
-          content: "⚠️ Something went wrong.",
-          timestamp: getTime(),
-        },
-      ]);
+      // Log only in development
+      if (import.meta.env.DEV) {
+        console.error("Chat Error:", err.response?.data || err.message);
+      }
+      
+      // Small delay before showing error message for consistency
+      setTimeout(() => {
+        setMessages([
+          ...newMessages,
+          {
+            role: "bot",
+            content: "⚠️ Something went wrong.",
+            timestamp: getTime(),
+          },
+        ]);
+      }, 500);
     } finally {
       setIsTyping(false);
     }
@@ -86,10 +108,10 @@ const CareerChat = () => {
         className="text-4xl font-bold text-center text-indigo-700 dark:text-yellow-400 mb-8"
       >
         Career Guidance Chatbot
-      </motion.h1>
-
-      <div className="max-w-4xl mx-auto flex flex-col h-[75vh] bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-4 overflow-hidden">
-        <div className="flex-1 overflow-y-auto space-y-4 pr-2">
+      </motion.h1>      <div className="max-w-4xl mx-auto flex flex-col h-[75vh] bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-4 overflow-hidden">        <div 
+          ref={chatContainerRef}
+          className="flex-1 overflow-y-auto space-y-4 pr-2"
+        >
           {messages.map((msg, i) => (
             <div
               key={i}
@@ -126,9 +148,7 @@ const CareerChat = () => {
                 </div>
               )}
             </div>
-          ))}
-
-          {isTyping && (
+          ))}          {isTyping && (
             <div className="flex items-center justify-start">
               <div className="w-8 h-8 bg-indigo-600 text-white flex items-center justify-center rounded-full mr-2">
                 🤖
@@ -138,8 +158,6 @@ const CareerChat = () => {
               </p>
             </div>
           )}
-
-          <div ref={bottomRef}></div>
         </div>
 
         <div className="mt-4 flex flex-col md:flex-row items-center gap-3">
