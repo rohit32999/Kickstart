@@ -42,6 +42,8 @@ export interface AuthContextType {
 // Create the AuthContext
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5002';
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -51,7 +53,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const fetchUser = async () => {
     setLoading(true);
     try {
-      const res = await axios.get("http://localhost:5000/api/auth/me", {
+      const res = await axios.get(`${API_BASE_URL}/api/auth/me`, {
         withCredentials: true,
       });
       setUser(res.data);
@@ -70,9 +72,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Login function
   const login = async (email: string, password: string) => {
-    try {
-      await axios.post(
-        "http://localhost:5000/api/auth/login",
+    try {      await axios.post(
+        `${API_BASE_URL}/api/auth/login`,
         { email, password },
         { withCredentials: true }
       );
@@ -89,7 +90,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Logout function
   const logout = async () => {
     try {
-      await axios.post("http://localhost:5000/api/auth/logout", {}, { withCredentials: true });
+      await axios.post(`${API_BASE_URL}/api/auth/logout`, {}, { withCredentials: true });
       setUser(null);
       // Use client-side navigation instead of window.location.href
       // window.location.href = "/login";
@@ -113,7 +114,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (profilePic) formData.append("profilePic", profilePic);
       if (resume) formData.append("resume", resume);
 
-      await axios.put("http://localhost:5000/api/user/update", formData, {
+      await axios.put(`${API_BASE_URL}/api/user/update`, formData, {
         withCredentials: true,
         headers: { "Content-Type": "multipart/form-data" },
       });

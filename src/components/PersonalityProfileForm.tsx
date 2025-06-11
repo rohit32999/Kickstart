@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { PersonalityProfile } from '../pages/careerRecommendation';
+import { PersonalityProfile } from '../pages/enhancedCareerRecommendation';
 
 interface Props {
   onSubmit: (profile: PersonalityProfile) => void;

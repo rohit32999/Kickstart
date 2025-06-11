@@ -1,6 +1,7 @@
 const express = require("express");
 const User = require("../models/User");
 const upload = require("../middleware/upload");
+const Feedback = require('../models/FeedbackModel');
 const router = express.Router();
 
 // Update user profile
@@ -105,6 +106,61 @@ router.get("/iq-questions", (req, res) => {
     options: q.options
   })); // Do not send the answer
   res.json({ questions: selected });
+});
+
+// Collect user feedback for career recommendations
+router.post("/feedback", async (req, res) => {
+  try {
+    const { userId, careerTitle, feedback, rating, userProfile } = req.body;
+    
+    if (!careerTitle || !feedback) {
+      return res.status(400).json({ message: "Career title and feedback are required" });
+    }
+
+    // Simple sentiment analysis (can be enhanced with external libraries)
+    const sentiment = feedback.toLowerCase().includes('good') || 
+                     feedback.toLowerCase().includes('great') || 
+                     feedback.toLowerCase().includes('excellent') ? 'positive' :
+                     feedback.toLowerCase().includes('bad') || 
+                     feedback.toLowerCase().includes('poor') || 
+                     feedback.toLowerCase().includes('wrong') ? 'negative' : 'neutral';
+
+    const feedbackRecord = new Feedback({
+      userId,
+      careerTitle,
+      feedback,
+      sentiment,
+      rating,
+      userProfile,
+      timestamp: new Date()
+    });
+
+    await feedbackRecord.save();
+
+    res.json({
+      message: "Feedback saved successfully",
+      feedbackId: feedbackRecord._id
+    });
+  } catch (error) {
+    console.error("Error saving feedback:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+// Get feedback-based adjustment for career recommendations
+router.get("/feedback-adjustment/:userId/:careerTitle", async (req, res) => {
+  try {
+    const { userId, careerTitle } = req.params;
+    
+    // For now, return a simple adjustment
+    // This would be enhanced with actual feedback data
+    const feedbackAdjustment = 0; // Placeholder
+    
+    res.json({ adjustment: feedbackAdjustment });
+  } catch (error) {
+    console.error("Error calculating feedback adjustment:", error);
+    res.json({ adjustment: 0 });
+  }
 });
 
 module.exports = router;

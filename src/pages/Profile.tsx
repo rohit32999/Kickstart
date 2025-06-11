@@ -3,6 +3,8 @@ import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import { motion } from "framer-motion";
 
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5002';
+
 export function Profile() {
   const { user, updateProfile } = useAuth();
   const [profileData, setProfileData] = useState({
@@ -117,7 +119,7 @@ export function Profile() {
     if (resume) formData.append("resume", resume);
 
     try {
-      const res = await axios.put("http://localhost:5000/api/user/update", formData, {
+      const res = await axios.put(`${API_BASE_URL}/api/user/update`, formData, {
         withCredentials: true,
         headers: { "Content-Type": "multipart/form-data" },
       });
@@ -154,7 +156,7 @@ export function Profile() {
           <div className="relative w-40 h-40 rounded-full overflow-hidden border-4 border-indigo-300 shadow-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
             {user?.profilePic ? (
               <img
-                src={`http://localhost:5000${user.profilePic}`}
+                src={`${API_BASE_URL}${user.profilePic}`}
                 alt="Profile"
                 className="w-full h-full object-cover"
               />

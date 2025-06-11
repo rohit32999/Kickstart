@@ -4,6 +4,8 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5002';
+
 const Signup = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -17,7 +19,7 @@ const Signup = () => {
     setError(null);
     setSuccess(null);
     try {
-      await axios.post("http://localhost:5000/api/auth/register", { username, email, password });
+      await axios.post(`${API_BASE_URL}/api/auth/register`, { username, email, password });
       setSuccess("Signup successful! You can now log in.");
     } catch (error) {
       console.error("Signup failed", error);
