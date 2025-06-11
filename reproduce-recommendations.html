@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Career Test - Reproduce Exact Results</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background: #1a1a2e; color: white; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, textarea, button { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #333; border-radius: 5px; background: #2a2a3e; color: white; }
+        button { background: #4CAF50; color: white; cursor: pointer; font-size: 16px; }
+        button:hover { background: #45a049; }
+        .result { background: #2a2a3e; padding: 15px; border-radius: 5px; margin-top: 20px; border-left: 4px solid #4CAF50; }
+        .loading { text-align: center; color: #4CAF50; }
+        .error { color: #ff6b6b; }
+    </style>
+</head>
+<body>
+    <h1>🎯 Reproduce Exact Career Recommendations</h1>
+    <p>This will test the exact same inputs to get back Software Developer/Data Scientist recommendations.</p>
+    
+    <div class="form-group">
+        <label>Test Scenario:</label>
+        <select id="scenario">
+            <option value="original">Original (Software Dev + Data Scientist)</option>
+            <option value="current">Current (Music-focused)</option>
+            <option value="tech-focused">Tech-focused (No music keywords)</option>
+        </select>
+    </div>
+    
+    <button onclick="testScenario()">🧪 Test Selected Scenario</button>
+    
+    <div id="loading" class="loading" style="display: none;">
+        🔄 Testing scenario... Please wait...
+    </div>
+    
+    <div id="result"></div>
+    
+    <script>
+        async function testScenario() {
+            const scenario = document.getElementById('scenario').value;
+            const loading = document.getElementById('loading');
+            const result = document.getElementById('result');
+            
+            loading.style.display = 'block';
+            result.innerHTML = '';
+            
+            let testData;
+            
+            switch(scenario) {
+                case 'original':
+                    // Try to reproduce the original Software Developer/Data Scientist results
+                    testData = {
+                        iqScore: 100,
+                        hobbies: "music",
+                        interests: "books technology programming",  // Added tech keywords
+                        academicDetails: "I am in 10th standard now",
+                        keywords: "software engineering computer science",  // Changed from singing
+                        location: "",
+                        useAI: true,
+                        additionalInfo: "",
+                        personality: {
+                            introvertExtrovert: "",
+                            leadership: "",
+                            creativity: "",
+                            riskTolerance: "",
+                            communication: ""
+                        }
+                    };
+                    break;
+                    
+                case 'current':
+                    // Your current inputs
+                    testData = {
+                        iqScore: 100,
+                        hobbies: "music",
+                        interests: "books",
+                        academicDetails: "I am in 10th standard now",
+                        keywords: "singing",
+                        location: "",
+                        useAI: true,
+                        additionalInfo: "",
+                        personality: {
+                            introvertExtrovert: "extrovert",
+                            leadership: "high",
+                            creativity: "medium",
+                            riskTolerance: "high",
+                            communication: "low"
+                        }
+                    };
+                    break;
+                    
+                case 'tech-focused':
+                    // Tech-focused without music
+                    testData = {
+                        iqScore: 100,
+                        hobbies: "reading technology",
+                        interests: "books programming computers",
+                        academicDetails: "I am in 10th standard now",
+                        keywords: "technology software development",
+                        location: "",
+                        useAI: true,
+                        additionalInfo: "",
+                        personality: {
+                            introvertExtrovert: "",
+                            leadership: "",
+                            creativity: "",
+                            riskTolerance: "",
+                            communication: ""
+                        }
+                    };
+                    break;
+            }
+            
+            try {
+                const response = await fetch('http://localhost:5001/api/career-recommendations', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(testData)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                result.innerHTML = `
+                    <div class="result">
+                        <h3>✅ Results for "${scenario}" scenario:</h3>
+                        <p><strong>Found ${data.recommendations.length} recommendations:</strong></p>
+                        ${data.recommendations.map((rec, index) => `
+                            <div style="margin: 10px 0; padding: 10px; background: #1a1a2e; border-radius: 5px;">
+                                <strong>${index + 1}. ${rec.title}</strong> 
+                                <span style="color: #4CAF50;">(${rec.confidencePercent}% confidence)</span>
+                                <br>
+                                <small style="color: #ccc;">${rec.description}</small>
+                                <br>
+                                <small style="color: #4CAF50;">💰 ${rec.metadata?.salaryRange?.experienced || 'N/A'}</small>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                
+            } catch (error) {
+                result.innerHTML = `
+                    <div class="result error">
+                        <h3>❌ Error:</h3>
+                        <p>${error.message}</p>
+                        <p>Make sure the Gemini backend is running on http://localhost:5001</p>
+                    </div>
+                `;
+            }
+            
+            loading.style.display = 'none';
+        }
+    </script>
+</body>
+</html>

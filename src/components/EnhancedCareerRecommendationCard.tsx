@@ -30,6 +30,17 @@ interface EnhancedCareerRecommendationProps extends CareerRecommendationCardProp
   onSave?: (career: string) => void;
   isSaved?: boolean;
   matchScore?: number;
+  
+  // New AI-powered fields
+  marketTrends?: string;
+  topCompanies?: string[];
+  jobSecurity?: 'High' | 'Medium' | 'Low';
+  workLifeBalance?: 'Excellent' | 'Good' | 'Average' | 'Challenging';
+  salaryBreakdown?: {
+    entry?: string;
+    experienced?: string;
+    senior?: string;
+  };
 }
 
 const EnhancedCareerRecommendationCard: React.FC<EnhancedCareerRecommendationProps> = memo(({
@@ -48,7 +59,12 @@ const EnhancedCareerRecommendationCard: React.FC<EnhancedCareerRecommendationPro
   education,
   onSave,
   isSaved = false,
-  matchScore = 0
+  matchScore = 0,
+  marketTrends,
+  topCompanies = [],
+  jobSecurity,
+  workLifeBalance,
+  salaryBreakdown
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [loadedInsights, setLoadedInsights] = useState<CareerInsights | null>(null);
@@ -460,9 +476,7 @@ const EnhancedCareerRecommendationCard: React.FC<EnhancedCareerRecommendationPro
                       </div>
                     )}
                   </motion.div>
-                )}
-
-                {activeTab === 'insights' && (
+                )}                {activeTab === 'insights' && (
                   <motion.div
                     key="insights"
                     initial={{ opacity: 0, x: 20 }}
@@ -474,23 +488,126 @@ const EnhancedCareerRecommendationCard: React.FC<EnhancedCareerRecommendationPro
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500"></div>
                         <span className="ml-3 text-gray-600 dark:text-gray-400">Loading market insights...</span>
                       </div>
-                    ) : loadedInsights ? (
-                      <div className="space-y-4">                        <div className="grid md:grid-cols-2 gap-4">
-                          <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                            <h5 className="font-medium text-green-800 dark:text-green-300 mb-2">Salary Range</h5>
-                            <div className="text-sm text-green-700 dark:text-green-400">
-                              <p>Entry: {loadedInsights.salaryRange.entryLevel.usd} ({loadedInsights.salaryRange.entryLevel.inr})</p>
-                              <p>Experienced: {loadedInsights.salaryRange.experienced.usd} ({loadedInsights.salaryRange.experienced.inr})</p>
+                    ) : (
+                      <div className="space-y-6">
+                        {/* Enhanced AI-Powered Metadata */}
+                        <div className="grid md:grid-cols-2 gap-4">
+                          {/* Salary Breakdown - AI Enhanced */}
+                          {salaryBreakdown ? (
+                            <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                              <h5 className="font-medium text-green-800 dark:text-green-300 mb-3 flex items-center gap-2">
+                                <DollarSign className="h-4 w-4" />
+                                Salary Breakdown (AI Enhanced)
+                              </h5>
+                              <div className="space-y-2 text-sm text-green-700 dark:text-green-400">
+                                {salaryBreakdown.entry && (
+                                  <div className="flex justify-between">
+                                    <span>Entry Level:</span>
+                                    <span className="font-medium">{salaryBreakdown.entry}</span>
+                                  </div>
+                                )}
+                                {salaryBreakdown.experienced && (
+                                  <div className="flex justify-between">
+                                    <span>Experienced:</span>
+                                    <span className="font-medium">{salaryBreakdown.experienced}</span>
+                                  </div>
+                                )}
+                                {salaryBreakdown.senior && (
+                                  <div className="flex justify-between">
+                                    <span>Senior Level:</span>
+                                    <span className="font-medium">{salaryBreakdown.senior}</span>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          ) : loadedInsights?.salaryRange ? (
+                            <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                              <h5 className="font-medium text-green-800 dark:text-green-300 mb-2">Salary Range</h5>
+                              <div className="text-sm text-green-700 dark:text-green-400">
+                                <p>Entry: {loadedInsights.salaryRange.entryLevel.usd} ({loadedInsights.salaryRange.entryLevel.inr})</p>
+                                <p>Experienced: {loadedInsights.salaryRange.experienced.usd} ({loadedInsights.salaryRange.experienced.inr})</p>
+                              </div>
+                            </div>
+                          ) : null}
+
+                          {/* Job Security */}
+                          {jobSecurity && (
+                            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                              <h5 className="font-medium text-blue-800 dark:text-blue-300 mb-2 flex items-center gap-2">
+                                <CheckCircle className="h-4 w-4" />
+                                Job Security
+                              </h5>
+                              <div className={`text-sm font-medium ${
+                                jobSecurity === 'High' ? 'text-green-600 dark:text-green-400' :
+                                jobSecurity === 'Medium' ? 'text-yellow-600 dark:text-yellow-400' :
+                                'text-red-600 dark:text-red-400'
+                              }`}>
+                                {jobSecurity}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Work-Life Balance */}
+                          {workLifeBalance && (
+                            <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
+                              <h5 className="font-medium text-purple-800 dark:text-purple-300 mb-2 flex items-center gap-2">
+                                <Clock className="h-4 w-4" />
+                                Work-Life Balance
+                              </h5>
+                              <div className={`text-sm font-medium ${
+                                workLifeBalance === 'Excellent' ? 'text-green-600 dark:text-green-400' :
+                                workLifeBalance === 'Good' ? 'text-blue-600 dark:text-blue-400' :
+                                workLifeBalance === 'Average' ? 'text-yellow-600 dark:text-yellow-400' :
+                                'text-red-600 dark:text-red-400'
+                              }`}>
+                                {workLifeBalance}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Growth Prospects - Fallback */}
+                          {!jobSecurity && !workLifeBalance && loadedInsights?.growthProspects && (
+                            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                              <h5 className="font-medium text-blue-800 dark:text-blue-300 mb-2">Growth Prospects</h5>
+                              <p className="text-sm text-blue-700 dark:text-blue-400">{loadedInsights.growthProspects.rating}</p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400">{loadedInsights.growthProspects.explanation}</p>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Market Trends */}
+                        {marketTrends && (
+                          <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-800">
+                            <h5 className="font-medium text-amber-800 dark:text-amber-300 mb-3 flex items-center gap-2">
+                              <TrendingUp className="h-4 w-4" />
+                              Market Trends & Outlook
+                            </h5>
+                            <p className="text-sm text-amber-700 dark:text-amber-400 leading-relaxed">{marketTrends}</p>
+                          </div>
+                        )}
+
+                        {/* Top Companies */}
+                        {topCompanies && topCompanies.length > 0 && (
+                          <div className="p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg border border-indigo-200 dark:border-indigo-800">
+                            <h5 className="font-medium text-indigo-800 dark:text-indigo-300 mb-3 flex items-center gap-2">
+                              <Briefcase className="h-4 w-4" />
+                              Top Companies Hiring
+                            </h5>
+                            <div className="flex flex-wrap gap-2">
+                              {topCompanies.map((company, index) => (
+                                <span
+                                  key={index}
+                                  className="px-3 py-1 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-300 text-sm rounded-full border border-indigo-200 dark:border-indigo-700"
+                                >
+                                  {company}
+                                </span>
+                              ))}
                             </div>
                           </div>
-                          <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                            <h5 className="font-medium text-blue-800 dark:text-blue-300 mb-2">Growth Prospects</h5>
-                            <p className="text-sm text-blue-700 dark:text-blue-400">{loadedInsights.growthProspects.rating}</p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">{loadedInsights.growthProspects.explanation}</p>
-                          </div>
-                        </div>
-                        
-                        {loadedInsights.inDemandRoles && (
+                        )}
+
+                        {/* In-Demand Roles - Fallback */}
+                        {(!topCompanies || topCompanies.length === 0) && loadedInsights?.inDemandRoles && (
                           <div>
                             <h5 className="font-medium text-gray-900 dark:text-white mb-2">In-Demand Roles</h5>
                             <div className="flex flex-wrap gap-2">
@@ -505,19 +622,31 @@ const EnhancedCareerRecommendationCard: React.FC<EnhancedCareerRecommendationPro
                             </div>
                           </div>
                         )}
+
+                        {/* Error State */}
+                        {error && (
+                          <div className="text-center py-8">
+                            <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
+                            <button
+                              onClick={loadCareerInsights}
+                              className="px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
+                            >
+                              Try Again
+                            </button>
+                          </div>
+                        )}
+
+                        {/* No Data State */}
+                        {!salaryBreakdown && !jobSecurity && !workLifeBalance && !marketTrends && (!topCompanies || topCompanies.length === 0) && !loadedInsights && !error && (
+                          <div className="text-center py-8">
+                            <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                              <TrendingUp className="h-8 w-8 text-gray-400" />
+                            </div>
+                            <p className="text-gray-500 dark:text-gray-400 mb-2">No market insights available</p>
+                            <p className="text-sm text-gray-400 dark:text-gray-500">Market data will be generated by AI for new recommendations</p>
+                          </div>
+                        )}
                       </div>
-                    ) : error ? (
-                      <div className="text-center py-8">
-                        <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
-                        <button
-                          onClick={loadCareerInsights}
-                          className="px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
-                        >
-                          Try Again
-                        </button>
-                      </div>
-                    ) : (
-                      <p className="text-gray-500 dark:text-gray-400">No market insights available</p>
                     )}
                   </motion.div>
                 )}

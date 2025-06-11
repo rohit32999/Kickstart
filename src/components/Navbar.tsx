@@ -77,6 +77,11 @@ export function Navbar() {
             <Link to="/" className={isActive("/")}>Home</Link>
             <Link to="/about" className={isActive("/about")}>About</Link>
             <Link to="/services" className={isActive("/services")}>Services</Link>
+            <Link to="/career-confusion-demo" className={isActive("/career-confusion-demo")}>
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent font-semibold">
+                🧠 Career Demo
+              </span>
+            </Link>
             <Link to="/contact" className={isActive("/contact")}>Contact</Link>
            
           </div>
@@ -189,6 +194,11 @@ export function Navbar() {
         } md:hidden shadow-lg border-l dark:border-gray-700 py-6 px-6 flex flex-col gap-4`}      >        <Link to="/" className={isActive("/")}>Home</Link>
         <Link to="/about" className={isActive("/about")}>About</Link>
         <Link to="/services" className={isActive("/services")}>Services</Link>
+        <Link to="/career-confusion-demo" className={isActive("/career-confusion-demo")}>
+          <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent font-semibold">
+            🧠 Career Demo
+          </span>
+        </Link>
         <Link to="/contact" className={isActive("/contact")}>Contact</Link>
 
         <button

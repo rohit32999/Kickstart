@@ -220,6 +220,75 @@ const EnhancedIQTest = memo(() => {
     });
   }, []);
 
+  // Direct API test function that bypasses complex state management
+  const handleDirectAPITest = useCallback(async () => {
+    console.log('🧪 Running direct API test...');
+    setLoading(true);
+    setError("");
+
+    try {
+      const testInput = {
+        iqScore: score || 100,
+        hobbies: 'listening music',
+        interests: 'books',
+        academicDetails: 'I am in 12th standard now',
+        keywords: 'Become a doctor',
+        location: '',
+        useAI: true,
+        additionalInfo: '',
+        personality: {
+          introvertExtrovert: '',
+          leadership: '',
+          creativity: '',
+          riskTolerance: '',
+          communication: ''
+        }
+      };
+
+      console.log('🚀 Direct API call with:', testInput);
+      
+      const response = await fetch('http://localhost:5001/api/career-recommendations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(testInput)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('✅ Direct API response:', data);
+
+      // Convert response to match EnhancedCareerRecommendation format
+      const recommendations: EnhancedCareerRecommendation[] = data.recommendations.map((rec: any) => ({
+        title: rec.title,
+        description: rec.description,
+        category: rec.metadata?.category || 'General',
+        confidencePercent: rec.confidencePercent || 70,
+        matchScore: rec.confidencePercent || 70,
+        salaryRange: rec.metadata?.salaryRange?.experienced || 'Competitive',
+        skills: rec.metadata?.skills || [],
+        nextSteps: rec.metadata?.nextSteps || [],
+        growthPotential: (rec.metadata?.growthPotential as 'high' | 'medium' | 'low') || 'medium',
+        workEnvironment: rec.metadata?.workEnvironment || 'Various',
+        education: rec.metadata?.education || 'As required',
+        why: rec.why || 'AI-powered recommendation',
+        resources: rec.metadata?.resources || []
+      }));
+
+      setCareerRecs(recommendations);
+      console.log('🎯 Direct API test successful - recommendations set');
+    } catch (err: any) {
+      console.error('❌ Direct API test failed:', err);
+      setError(`Direct API test failed: ${err.message}`);
+    } finally {
+      setLoading(false);
+    }
+  }, [score]);
+
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -518,17 +587,15 @@ const EnhancedIQTest = memo(() => {
                         };                        try {
                           // Save user data
                           await axios.put(`${API_BASE_URL}/api/user/update`, data, { withCredentials: true });
-                          
-                          // Get enhanced career recommendations
+                            // Get enhanced career recommendations
                           if (score !== null) {
                             const recommendations = await getEnhancedCareerRecommendations({
                               ...data,
                               iqScore: score
                             });
-                            setCareerRecs(recommendations);
+                            setCareerRecs(recommendations.recommendations);
                           }
-                          
-                        } catch (err) {
+                            } catch (err) {
                           console.error(err);
                           setError("Failed to generate recommendations");
                         } finally {
@@ -595,16 +662,29 @@ const EnhancedIQTest = memo(() => {
                             className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
                             placeholder="e.g., New York, Remote, Global"
                           />
+                        </div>                      </div>
+                      
+                      <div className="space-y-4">
+                        <button
+                          type="submit"
+                          disabled={loading}
+                          className="w-full py-3 bg-indigo-600 dark:bg-yellow-500 text-white rounded-lg font-semibold hover:bg-indigo-700 dark:hover:bg-yellow-600 disabled:opacity-50 transition-all"
+                        >
+                          {loading ? 'Generating Recommendations...' : 'Get Career Recommendations'}
+                        </button>
+                        
+                        <div className="text-center">
+                          <div className="text-sm text-gray-500 dark:text-gray-400 mb-2">or</div>
+                          <button
+                            type="button"
+                            onClick={handleDirectAPITest}
+                            disabled={loading}
+                            className="px-6 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 transition-all"
+                          >
+                            🧪 Direct API Test (Fast)
+                          </button>
                         </div>
                       </div>
-                      
-                      <button
-                        type="submit"
-                        disabled={loading}
-                        className="w-full py-3 bg-indigo-600 dark:bg-yellow-500 text-white rounded-lg font-semibold hover:bg-indigo-700 dark:hover:bg-yellow-600 disabled:opacity-50 transition-all"
-                      >
-                        {loading ? 'Generating Recommendations...' : 'Get Career Recommendations'}
-                      </button>
                     </form>
                   </div>
                 )}                {/* Career Recommendations Display */}

@@ -1,0 +1,28 @@
+﻿{
+    "recommendations":  [
+                            {
+                                "title":  "Machine Learning Engineer",
+                                "description":  "Develops, implements, and maintains machine learning algorithms and models to solve real-world problems.",
+                                "confidencePercent":  90,
+                                "why":  "This aligns perfectly with the user\u0027s stated interests in data analysis and machine learning, coupled with their Masters in Computer Science.  The high creativity score suggests an aptitude for innovative solutions within ML, while the introverted personality is well-suited to the often independent nature of research and development in this field. The strong demand for Machine Learning Engineers in India in 2025 further strengthens this recommendation."
+                            },
+                            {
+                                "title":  "Data Scientist",
+                                "description":  "Collects, analyzes, and interprets complex data sets to extract meaningful insights and support business decision-making.",
+                                "confidencePercent":  85,
+                                "why":  "The user\u0027s interest in data analysis and their computer science background make this a strong fit.  The Masters degree provides the necessary analytical and technical skills. While not explicitly stated as an interest, the research hobby suggests an aptitude for the investigative nature of data science.  The Indian job market shows a consistently high demand for skilled data scientists."
+                            },
+                            {
+                                "title":  "Data Analyst",
+                                "description":  "Collects, cleans, and analyzes data to identify trends and patterns, providing actionable insights to stakeholders.",
+                                "confidencePercent":  75,
+                                "why":  "This role directly addresses the user\u0027s interest in data analysis.  The computer science background provides a solid foundation.  While less specialized than Machine Learning Engineer or Data Scientist, it offers a viable entry point, particularly given the user\u0027s introverted personality, which might prefer a less outwardly facing role initially.  The demand for data analysts in India remains high in 2025."
+                            },
+                            {
+                                "title":  "Research Scientist (AI/ML Focus)",
+                                "description":  "Conducts independent research and development in the field of Artificial Intelligence and Machine Learning, often contributing to advancements in the field.",
+                                "confidencePercent":  70,
+                                "why":  "This leverages the user\u0027s interest in research and coding, aligning well with their Masters in Computer Science.  The high creativity score is particularly beneficial for innovative research.  The introverted personality is suitable for the often solitary nature of research work.  While competitive, opportunities exist in India\u0027s growing research and development sector in AI/ML."
+                            }
+                        ]
+}

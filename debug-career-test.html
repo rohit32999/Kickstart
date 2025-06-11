@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career System Debug Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .debug-info {
+            background-color: #f0f8ff;
+            border: 1px solid #b0d4f1;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .error-info {
+            background-color: #ffe6e6;
+            border: 1px solid #ff9999;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .success-info {
+            background-color: #e6ffe6;
+            border: 1px solid #99ff99;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .form-group {
+            margin: 15px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        textarea {
+            height: 80px;
+            resize: vertical;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Career System Debug Test</h1>
+    
+    <div class="test-section">
+        <h2>Test Career Recommendation System</h2>
+        <p>This page tests the career recommendation system independently to debug the form submission issue.</p>
+        
+        <div class="form-group">
+            <label for="interests">Interests:</label>
+            <textarea id="interests" placeholder="e.g., books, reading, technology">books</textarea>
+        </div>
+        
+        <div class="form-group">
+            <label for="hobbies">Hobbies:</label>
+            <textarea id="hobbies" placeholder="e.g., listening music, sports">listening music</textarea>
+        </div>
+        
+        <div class="form-group">
+            <label for="academic">Academic Background:</label>
+            <textarea id="academic" placeholder="e.g., I am in 12th standard now">I am in 12th standard now</textarea>
+        </div>
+        
+        <div class="form-group">
+            <label for="keywords">Keywords/Goals:</label>
+            <input type="text" id="keywords" placeholder="e.g., Become a doctor" value="Become a doctor">
+        </div>
+        
+        <button onclick="testRecommendations()">Test Career Recommendations</button>
+        <button onclick="testWithConfusion()">Test with Confusion Handling</button>
+        <button onclick="clearResults()">Clear Results</button>
+        
+        <div id="debug-output"></div>
+    </div>
+
+    <script>
+        // Mock the career recommendation functions for testing
+        const mockCareerInput = {
+            iqScore: 100,
+            useAI: true,
+            personality: {
+                introvertExtrovert: '',
+                leadership: '',
+                creativity: '',
+                riskTolerance: '',
+                communication: ''
+            }
+        };
+
+        function getFormData() {
+            return {
+                ...mockCareerInput,
+                interests: document.getElementById('interests').value,
+                hobbies: document.getElementById('hobbies').value,
+                academicDetails: document.getElementById('academic').value,
+                keywords: document.getElementById('keywords').value,
+                location: '',
+                additionalInfo: ''
+            };
+        }
+
+        function appendDebugInfo(message, type = 'debug') {
+            const output = document.getElementById('debug-output');
+            const div = document.createElement('div');
+            div.className = type + '-info';
+            div.innerHTML = `<strong>[${new Date().toLocaleTimeString()}]</strong> ${message}`;
+            output.appendChild(div);
+        }
+
+        function clearResults() {
+            document.getElementById('debug-output').innerHTML = '';
+        }
+
+        async function testRecommendations() {
+            appendDebugInfo('🚀 Starting career recommendation test...');
+            
+            const input = getFormData();
+            appendDebugInfo(`📝 Input data: ${JSON.stringify(input, null, 2)}`);
+            
+            try {
+                // Test 1: Check if we can access the main app
+                appendDebugInfo('🔗 Testing connection to main application...');
+                
+                // Test 2: Try to make a request to our backend
+                appendDebugInfo('🌐 Testing backend connection...');
+                
+                try {
+                    const response = await fetch('http://localhost:5001/api/career-recommendations', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(input)
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        appendDebugInfo('✅ Backend connection successful!', 'success');
+                        appendDebugInfo(`📊 Backend response: ${JSON.stringify(data, null, 2)}`, 'success');
+                    } else {
+                        appendDebugInfo(`⚠️ Backend returned status: ${response.status}`, 'error');
+                    }
+                } catch (backendError) {
+                    appendDebugInfo(`❌ Backend connection failed: ${backendError.message}`, 'error');
+                    appendDebugInfo('💡 This is expected if Gemini backend is not running - fallback should work', 'debug');
+                }
+                
+                // Test 3: Test our enhanced fallback system
+                appendDebugInfo('🔄 Testing enhanced fallback system...');
+                
+                const fallbackResult = await testFallbackLogic(input);
+                appendDebugInfo(`✅ Fallback system result: ${JSON.stringify(fallbackResult, null, 2)}`, 'success');
+                
+            } catch (error) {
+                appendDebugInfo(`❌ Test failed: ${error.message}`, 'error');
+                console.error('Test error:', error);
+            }
+        }
+
+        async function testFallbackLogic(input) {
+            // Simulate the enhanced fallback logic we implemented
+            const { hobbies, interests, academicDetails, keywords, iqScore } = input;
+            const userText = `${hobbies} ${interests} ${academicDetails} ${keywords || ''}`.toLowerCase();
+            
+            appendDebugInfo(`🔍 Analyzing user text: "${userText}"`);
+            
+            const recommendations = [];
+            
+            // Medical field detection
+            if (userText.includes('medicine') || userText.includes('doctor') || userText.includes('mbbs') || 
+                userText.includes('medical') || userText.includes('healthcare') || userText.includes('neet')) {
+                recommendations.push({
+                    title: 'Doctor/Medical Professional',
+                    description: 'Provide medical care and help people with health issues.',
+                    confidencePercent: 95,
+                    why: 'Strong match based on your medical interests and background.'
+                });
+                appendDebugInfo('🏥 Detected medical field interest');
+            }
+            
+            // Technology field detection
+            if (userText.includes('programming') || userText.includes('coding') || userText.includes('software') || 
+                userText.includes('computer') || userText.includes('technology') || userText.includes('tech')) {
+                recommendations.push({
+                    title: 'Software Developer',
+                    description: 'Build software applications and systems using programming languages.',
+                    confidencePercent: Math.min(95, Math.max(60, iqScore + 10)),
+                    why: 'Excellent fit based on your technical interests and analytical abilities.'
+                });
+                appendDebugInfo('💻 Detected technology field interest');
+            }
+            
+            // Default recommendations if no specific field detected
+            if (recommendations.length === 0) {
+                recommendations.push({
+                    title: 'Career Exploration',
+                    description: 'Explore different career paths to find what interests you most.',
+                    confidencePercent: 70,
+                    why: 'Take time to explore various fields and discover your passion.'
+                });
+                appendDebugInfo('🎯 Using default exploration recommendation');
+            }
+            
+            return recommendations;
+        }
+
+        async function testWithConfusion() {
+            appendDebugInfo('🧠 Testing confusion handling system...');
+            
+            const confusedInput = {
+                ...getFormData(),
+                additionalInfo: 'I feel overwhelmed by all the career options and analysis paralysis'
+            };
+            
+            appendDebugInfo(`📝 Confused user input: ${JSON.stringify(confusedInput, null, 2)}`);
+            
+            // Simulate confusion detection
+            const hasConfusionKeywords = confusedInput.additionalInfo.toLowerCase().includes('overwhelmed') ||
+                                        confusedInput.additionalInfo.toLowerCase().includes('paralysis');
+            
+            if (hasConfusionKeywords) {
+                appendDebugInfo('⚡ Confusion detected - would trigger advanced UI', 'success');
+            } else {
+                appendDebugInfo('📊 No confusion detected - would use standard UI', 'debug');
+            }
+        }
+
+        // Initialize with test message
+        window.onload = function() {
+            appendDebugInfo('🔧 Debug test page loaded. Click buttons above to test the career recommendation system.');
+        };
+    </script>
+</body>
+</html>
