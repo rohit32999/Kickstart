@@ -22,11 +22,16 @@ const Login = () => {
     e.preventDefault();
     setError(null);
     try {
-      await login(email, password);
-      navigate("/");
-    } catch {
-      setError("Invalid email or password. Please try again.");
-    }
+  await login(email, password);
+  navigate("/");
+} catch (err: any) {
+  if (err.response && err.response.data && err.response.data.error) {
+    setError(err.response.data.error); // <-- backend error message
+  } else {
+    setError("Something went wrong. Please try again.");
+  }
+}
+
   };
 
   return (
